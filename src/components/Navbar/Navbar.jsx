@@ -27,17 +27,14 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="tw-bg-white tw-rounded-lg tw-shadow-md">
+    <nav className="tw-bg-white tw-shadow-md">
       <div className="tw-container tw-mx-auto tw-flex tw-items-center tw-justify-between tw-py-4 tw-px-6">
         {/* Left Section: Home Icon and App Name */}
         <div className="tw-flex tw-items-center">
           <IconButton onClick={() => navigate("/")}>
             <FitbitOutlinedIcon className="tw-text-blue-500 tw-h-6 tw-w-6" />
           </IconButton>
-          <Typography
-            variant="h6"
-            className="tw-text-black tw-font-semibold tw-ml-2"
-          >
+          <Typography variant="h6" className="tw-text-black tw-font-semibold">
             FitLog
           </Typography>
         </div>
@@ -54,7 +51,7 @@ export default function Navbar() {
           </Button>
 
           {/* Profile Menu */}
-          <div>
+          <div className="tw-relative">
             <IconButton onClick={handleMenu}>
               <AccountCircle className="tw-text-blue-500 tw-h-6 tw-w-6" />
             </IconButton>

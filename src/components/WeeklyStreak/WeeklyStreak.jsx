@@ -6,7 +6,7 @@ const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function WeeklyStreak({ streakData }) {
   return (
-    <div className="tw-bg-white tw-shadow-md tw-rounded-lg tw-p-4 tw-w-full tw-mx-auto tw-mt-2">
+    <div className="tw-bg-white tw-rounded-lg tw-p-4 tw-w-full tw-mx-auto tw-mt-2">
       <div className="tw-flex tw-flex-col md:tw-flex-row tw-justify-between tw-items-center md:tw-items-start">
         {/* Header Text */}
         <h3 className="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-4 md:tw-mb-0">

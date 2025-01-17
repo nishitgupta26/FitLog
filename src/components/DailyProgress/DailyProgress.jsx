@@ -7,7 +7,7 @@ export default function DailyProgress({ goal, progress }) {
   const percentage = Math.min((progress / goal) * 100, 100); // Capping at 100%
 
   return (
-    <div className="tw-w-full tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-md tw-mt-2">
+    <div className="tw-w-full tw-p-4 tw-bg-white tw-rounded-lg tw-mt-2">
       <div className="tw-flex tw-justify-between tw-items-center tw-mb-2">
         <Typography className="tw-text-lg tw-font-medium tw-text-gray-700">
           Daily Goal Progress

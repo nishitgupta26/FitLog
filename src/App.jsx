@@ -8,7 +8,6 @@ function App() {
   return (
     <>
       <Home />
-      <h1>Welcome to Fitlog</h1>
     </>
   );
 }
