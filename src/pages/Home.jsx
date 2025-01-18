@@ -8,7 +8,7 @@ export default function Home({ goal, progress }) {
   const sampleStreak = [true, false, true, true, false, true, true]; // Example data
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <WeeklyStreak streakData={sampleStreak} />
       <DailyProgress goal={100} progress={30} />
       <ExerciseLog />

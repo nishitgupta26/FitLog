@@ -22,8 +22,13 @@ export default function Navbar() {
   };
 
   const handleNavigate = (path) => {
+    if (path === "logout") {
+      localStorage.removeItem("profileData"); // Clear user info from local storage
+      alert("You have been logged out."); // Optional alert for feedback
+    } else {
+      navigate(path);
+    }
     handleClose();
-    navigate(path);
   };
 
   return (
@@ -63,7 +68,9 @@ export default function Navbar() {
               <MenuItem onClick={() => handleNavigate("/profile")}>
                 Profile
               </MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <MenuItem onClick={() => handleNavigate("logout")}>
+                Logout
+              </MenuItem>
             </Menu>
           </div>
         </div>
