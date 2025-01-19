@@ -1,12 +1,10 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
-import DailyProgress from "./components/DailyProgress/DailyProgress";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import { ImportContacts } from "@mui/icons-material";
 import SetNewGoal from "./pages/SetNewGoal";
-import useExerciseNames from "./stores/useExerciseNames"; // Import Zustand store
+import useExerciseNames from "./stores/useExerciseNames";
 
 function App() {
   const fetchExerciseNames = useExerciseNames(
@@ -14,7 +12,6 @@ function App() {
   );
 
   useEffect(() => {
-    // Initialize LocalStorage data if not already present
     const exerciseNames = [
       "Push-Ups",
       "Pull-Ups",
@@ -47,26 +44,25 @@ function App() {
       "Jump Rope",
       "High Knees",
     ];
+
     if (!localStorage.getItem("exerciseNames")) {
       localStorage.setItem("exerciseNames", JSON.stringify(exerciseNames));
     }
-
-    // Fetch exercise names into Zustand store
     fetchExerciseNames();
   }, [fetchExerciseNames]);
 
   return (
-    <>
+    <div className="tw-min-h-screen tw-bg-gradient-to-br tw-from-blue-50 tw-to-indigo-50">
       <Navbar />
-      <div className="tw-p-4 tw-bg-gray-100 tw-min-h-screen">
+      <div className="tw-container tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-6">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/set-goal" element={<SetNewGoal />} />
-          <Route path="/update-goal" element={<Profile />} />
+          <Route path="/update-goal" element={<SetNewGoal />} />
         </Routes>
       </div>
-    </>
+    </div>
   );
 }
 
