@@ -2,41 +2,35 @@ import React, { useState, useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import useExerciseNames from "../../stores/useExerciseNames";
 
-export default function ExerciseLog() {
+export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
   const [exercise, setExercise] = useState("");
   const [reps, setReps] = useState("");
   const [type, setType] = useState("reps");
   const [comments, setComments] = useState("");
-  const [logs, setLogs] = useState([]);
-  const [exerciseNames, setExerciseNames] = useState([]);
-  const [filteredExercises, setFilteredExercises] = useState([]);
+  const [filteredExerciseNames, setFilteredExerciseNames] = useState([]);
+  const exerciseNames = useExerciseNames((state) => state.exerciseNames);
 
-  // Fetch exercise names from LocalStorage
-  useEffect(() => {
-    const storedExerciseNames =
-      JSON.parse(localStorage.getItem("exerciseNames")) || [];
-    setExerciseNames(storedExerciseNames);
-  }, []);
-
-  // Update filtered exercises based on input
   useEffect(() => {
     if (exercise.trim() === "") {
-      setFilteredExercises([]);
+      setFilteredExerciseNames([]);
     } else {
       const filtered = exerciseNames.filter((name) =>
         name.toLowerCase().includes(exercise.toLowerCase())
       );
-      setFilteredExercises(filtered);
+      setFilteredExerciseNames(filtered);
     }
   }, [exercise, exerciseNames]);
 
   const handleAdd = () => {
     if (exercise && reps) {
-      setLogs([
-        ...logs,
-        { id: Date.now(), exercise, reps: `${reps} ${type}`, comments },
-      ]);
+      onAddLog({
+        id: Date.now(),
+        exercise,
+        reps: `${reps} ${type}`,
+        comments,
+      });
       setExercise("");
       setReps("");
       setComments("");
@@ -45,35 +39,35 @@ export default function ExerciseLog() {
   };
 
   const handleDelete = (id) => {
-    setLogs(logs.filter((log) => log.id !== id));
+    onDeleteLog(id);
   };
 
   const handleSuggestionClick = (name) => {
     setExercise(name);
-    setFilteredExercises([]); // Clear suggestions after selection
+    setFilteredExerciseNames([]);
   };
 
   return (
-    <div className="tw-bg-white tw-rounded-lg tw-p-4 tw-w-full tw-mx-auto tw-space-y-6 tw-mt-2">
-      {/* Search Bar and Add Button */}
-      <div className="tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-space-y-4 md:tw-space-y-0 md:tw-space-x-4">
+    <div className="tw-bg-white tw-rounded-lg tw-p-2 sm:tw-p-4 tw-w-full tw-mx-auto tw-space-y-4 sm:tw-space-y-6 tw-mt-2">
+      {/* Input Section */}
+      <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-3 sm:tw-gap-4">
         {/* Exercise Input */}
-        <div className="tw-relative tw-flex-1">
+        <div className="tw-relative">
           <input
             type="text"
             placeholder="Exercise (e.g., Push-Ups)"
             value={exercise}
             onChange={(e) => setExercise(e.target.value)}
-            className="tw-w-full tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-2 tw-text-sm tw-h-10 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
+            className="tw-w-full tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 sm:tw-px-4 tw-py-2 tw-text-sm tw-h-10 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
           />
           {/* Suggestions Dropdown */}
-          {filteredExercises.length > 0 && (
+          {filteredExerciseNames.length > 0 && (
             <div className="tw-absolute tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-w-full tw-max-h-40 tw-overflow-y-auto tw-z-10 tw-mt-1">
-              {filteredExercises.map((name) => (
+              {filteredExerciseNames.map((name) => (
                 <div
                   key={name}
                   onClick={() => handleSuggestionClick(name)}
-                  className="tw-p-2 tw-cursor-pointer hover:tw-bg-blue-100 tw-transition-all"
+                  className="tw-p-2 tw-cursor-pointer hover:tw-bg-blue-100 tw-transition-all tw-text-sm"
                 >
                   {name}
                 </div>
@@ -82,23 +76,25 @@ export default function ExerciseLog() {
           )}
         </div>
 
-        {/* Reps/Mins Input with Styled MUI Selector */}
-        <div className="tw-flex tw-flex-1 tw-items-center tw-space-x-2">
+        {/* Reps/Time Input with Type Selector */}
+        <div className="tw-flex tw-gap-2">
           <input
             type="number"
             placeholder={
               type === "reps"
-                ? "Enter reps (e.g., 10)"
+                ? "Enter reps"
                 : type === "mins"
-                ? "Enter time (e.g., 30 mins)"
-                : "Enter dist (e.g., 5 km)"
+                ? "Enter mins"
+                : "Enter km"
             }
             value={reps}
             onChange={(e) => setReps(e.target.value)}
-            className="tw-flex-1 tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-2 tw-text-sm tw-h-10 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
+            className="tw-flex-1 tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 sm:tw-px-4 tw-py-2 tw-text-sm tw-h-10 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
           />
-          <FormControl variant="outlined" className="tw-w-32">
-            <InputLabel id="select-type-label">Type</InputLabel>
+          <FormControl variant="outlined" className="tw-w-24 sm:tw-w-32">
+            <InputLabel id="select-type-label" className="tw-text-sm">
+              Type
+            </InputLabel>
             <Select
               labelId="select-type-label"
               value={type}
@@ -109,35 +105,19 @@ export default function ExerciseLog() {
                 PaperProps: {
                   sx: {
                     backgroundColor: "#f9f9f9",
-                    color: "#333",
-                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                     borderRadius: "8px",
-                    padding: "4px",
-                  },
-                },
-                MenuListProps: {
-                  sx: {
-                    padding: 0,
+                    marginTop: "4px",
                   },
                 },
               }}
             >
-              <MenuItem
-                value="reps"
-                className="hover:tw-bg-blue-100 tw-transition-all tw-py-2 tw-px-4"
-              >
+              <MenuItem value="reps" className="tw-text-sm">
                 Reps
               </MenuItem>
-              <MenuItem
-                value="mins"
-                className="hover:tw-bg-blue-100 tw-transition-all tw-py-2 tw-px-4"
-              >
+              <MenuItem value="mins" className="tw-text-sm">
                 Minutes
               </MenuItem>
-              <MenuItem
-                value="kms"
-                className="hover:tw-bg-blue-100 tw-transition-all tw-py-2 tw-px-4"
-              >
+              <MenuItem value="kms" className="tw-text-sm">
                 Kms
               </MenuItem>
             </Select>
@@ -149,46 +129,52 @@ export default function ExerciseLog() {
           placeholder="Comments (optional)"
           value={comments}
           onChange={(e) => setComments(e.target.value)}
-          className="tw-flex-1 tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-2 tw-text-sm tw-h-10 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
-        ></textarea>
+          className="tw-w-full tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 sm:tw-px-4 tw-py-2 tw-text-sm tw-h-10 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-resize-none"
+        />
 
         {/* Add Button */}
         <button
           onClick={handleAdd}
-          className="tw-bg-blue-500 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-flex tw-items-center hover:tw-bg-blue-600 tw-transition-all"
+          className="tw-bg-blue-500 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-justify-center hover:tw-bg-blue-600 tw-transition-all tw-h-10"
         >
           <AddIcon className="tw-mr-2" />
-          Add
+          <span className="tw-text-sm">Add</span>
         </button>
       </div>
 
       {/* Exercise Log List */}
-      <div className="tw-space-y-4">
+      <div className="tw-space-y-3 sm:tw-space-y-4">
         {logs.length > 0 ? (
           logs.map((log) => (
             <div
               key={log.id}
-              className="tw-flex tw-flex-col md:tw-flex-row tw-justify-between tw-items-center tw-bg-gray-50 tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-space-y-4 md:tw-space-y-0"
+              className="tw-flex tw-flex-col sm:tw-flex-row tw-justify-between tw-items-start sm:tw-items-center tw-bg-gray-50 tw-border tw-border-gray-200 tw-rounded-lg tw-p-3 sm:tw-p-4 tw-space-y-2 sm:tw-space-y-0"
             >
-              <div className="tw-flex-1">
-                <h4 className="tw-font-semibold tw-text-gray-700">
-                  {log.exercise}
-                </h4>
-                <p className="tw-text-sm tw-text-gray-500">{log.reps}</p>
+              <div className="tw-flex-1 tw-space-y-1">
+                <div className="tw-flex tw-items-center tw-justify-between sm:tw-justify-start tw-gap-4">
+                  <h4 className="tw-font-semibold tw-text-gray-700 tw-text-sm sm:tw-text-base">
+                    {log.exercise}
+                  </h4>
+                  <p className="tw-text-xs sm:tw-text-sm tw-text-gray-500">
+                    {log.reps}
+                  </p>
+                </div>
                 {log.comments && (
-                  <p className="tw-text-xs tw-text-gray-400">{log.comments}</p>
+                  <p className="tw-text-xs tw-text-gray-400 tw-break-words">
+                    {log.comments}
+                  </p>
                 )}
               </div>
               <button
                 onClick={() => handleDelete(log.id)}
-                className="tw-text-red-500 hover:tw-text-red-600 tw-transition-all"
+                className="tw-text-red-500 hover:tw-text-red-600 tw-transition-all sm:tw-ml-4"
               >
-                <DeleteIcon />
+                <DeleteIcon className="tw-w-5 tw-h-5" />
               </button>
             </div>
           ))
         ) : (
-          <p className="tw-text-sm tw-text-gray-500 tw-text-center">
+          <p className="tw-text-sm tw-text-gray-500 tw-text-center tw-py-4">
             No exercises logged yet. Add your first exercise!
           </p>
         )}

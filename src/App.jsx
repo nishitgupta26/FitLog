@@ -5,9 +5,16 @@ import DailyProgress from "./components/DailyProgress/DailyProgress";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import { ImportContacts } from "@mui/icons-material";
+import SetNewGoal from "./pages/SetNewGoal";
+import useExerciseNames from "./stores/useExerciseNames"; // Import Zustand store
 
 function App() {
+  const fetchExerciseNames = useExerciseNames(
+    (state) => state.fetchExerciseNames
+  );
+
   useEffect(() => {
+    // Initialize LocalStorage data if not already present
     const exerciseNames = [
       "Push-Ups",
       "Pull-Ups",
@@ -40,12 +47,13 @@ function App() {
       "Jump Rope",
       "High Knees",
     ];
-
-    // Store exercise names in LocalStorage if not already present
     if (!localStorage.getItem("exerciseNames")) {
       localStorage.setItem("exerciseNames", JSON.stringify(exerciseNames));
     }
-  }, []);
+
+    // Fetch exercise names into Zustand store
+    fetchExerciseNames();
+  }, [fetchExerciseNames]);
 
   return (
     <>
@@ -54,6 +62,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/set-goal" element={<SetNewGoal />} />
+          <Route path="/update-goal" element={<Profile />} />
         </Routes>
       </div>
     </>
