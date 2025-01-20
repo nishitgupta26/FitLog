@@ -16,7 +16,7 @@ export default function DailyProgress({ goal, progress }) {
             Daily Goal Progress
           </Typography>
           <div className="tw-flex tw-items-center tw-space-x-2">
-            <Typography variant="h5" className="tw-font-bold tw-text-blue-600">
+            <Typography variant="h5" className="tw-font-bold tw-text-green-600">
               {Math.round(percentage)}%
             </Typography>
             {isCompleted && (
@@ -34,7 +34,7 @@ export default function DailyProgress({ goal, progress }) {
             sx={{
               backgroundColor: "#EEF2FF",
               "& .MuiLinearProgress-bar": {
-                backgroundColor: "#3B82F6",
+                backgroundColor: "#4caf50",
                 borderRadius: "9999px",
               },
             }}
@@ -46,7 +46,7 @@ export default function DailyProgress({ goal, progress }) {
             <Typography
               variant="body2"
               className={`tw-font-medium ${
-                isCompleted ? "tw-text-green-600" : "tw-text-blue-600"
+                isCompleted ? "tw-text-green-600" : "tw-text-gray-600"
               }`}
             >
               {isCompleted

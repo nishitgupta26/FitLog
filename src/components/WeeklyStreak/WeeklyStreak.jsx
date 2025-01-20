@@ -19,8 +19,8 @@ export default function WeeklyStreak({ streakData }) {
           <Typography variant="h6" className="tw-font-semibold">
             Weekly Streak
           </Typography>
-          <div className="tw-bg-blue-100 tw-px-4 tw-py-1 tw-rounded-full">
-            <Typography variant="subtitle2" className="tw-text-blue-700">
+          <div className="tw-bg-green-200 tw-px-4 tw-py-1 tw-rounded-full">
+            <Typography variant="subtitle2" className="tw-text-green-700">
               {currentStreak} Day Streak
             </Typography>
           </div>
@@ -41,7 +41,7 @@ export default function WeeklyStreak({ streakData }) {
               </Typography>
               {streakData[index] ? (
                 <div className="tw-bg-blue-100 tw-rounded-full tw-p-1">
-                  <CheckCircleIcon className="tw-text-blue-500 tw-h-6 tw-w-6" />
+                  <CheckCircleIcon className="tw-text-green-600 tw-h-6 tw-w-6" />
                 </div>
               ) : (
                 <div className="tw-bg-gray-100 tw-rounded-full tw-p-1">

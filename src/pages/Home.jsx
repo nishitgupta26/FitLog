@@ -4,6 +4,7 @@ import WeeklyStreak from "../components/WeeklyStreak/WeeklyStreak";
 import DailyProgress from "../components/DailyProgress/DailyProgress";
 import ExerciseLog from "../components/Exercise Log/ExerciseLog";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import WavingHandIcon from '@mui/icons-material/WavingHand';
 
 export default function Home({ goal, progress }) {
   const sampleStreak = [true, false, true, true, false, true, true];
@@ -27,7 +28,8 @@ export default function Home({ goal, progress }) {
         <div className="tw-px-6 tw-py-8 sm:tw-px-8 sm:tw-py-10 tw-flex tw-flex-col sm:tw-flex-row tw-items-center tw-justify-between">
           <div className="tw-text-white tw-space-y-2 tw-text-center sm:tw-text-left">
             <Typography variant="h4" className="tw-font-bold">
-              Welcome to FitLog
+              Welcome to FitLog 
+              <WavingHandIcon sx={{ marginLeft: "8px", color: "#FFA500", fontSize: 28 }} />
             </Typography>
             <Typography variant="subtitle1" className="tw-opacity-90">
               Track your fitness journey and achieve your goals!
@@ -41,16 +43,16 @@ export default function Home({ goal, progress }) {
 
       {/* Stats Grid */}
       <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
-        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden">
+        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-pink-200">
           <WeeklyStreak streakData={sampleStreak} />
         </Paper>
-        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden">
+        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-yellow-200">
           <DailyProgress goal={100} progress={30} />
         </Paper>
       </div>
 
       {/* Exercise Log Section */}
-      <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden">
+      <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-blue-200">
         <div className="tw-p-6">
           <Typography variant="h6" className="tw-font-semibold tw-mb-4">
             Today's Exercises
