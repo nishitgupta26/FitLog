@@ -19,8 +19,12 @@ export default function Home() {
     deleteGoal(id);
   };
 
-  const totalProgress = goals.reduce((acc, goal) => acc + goal.progress, 0);
-  const totalGoal = goals.reduce((acc, goal) => acc + goal.value, 0);
+  const validGoals = goals.filter((goal) => goal.goalValue > 0);
+  const totalProgress = validGoals.reduce(
+    (acc, goal) => acc + goal.progress,
+    0
+  );
+  const totalGoal = validGoals.reduce((acc, goal) => acc + goal.goalValue, 0);
   const progressPercentage =
     totalGoal > 0 ? (totalProgress / totalGoal) * 100 : 0;
 
