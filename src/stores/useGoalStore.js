@@ -1,74 +1,61 @@
-// stores/goalStore.js
-import { create } from 'zustand';
+import {create} from 'zustand';
 import { persist } from 'zustand/middleware';
 
 const useGoalStore = create(
   persist(
     (set, get) => ({
       goals: [],
-      
-      // Add a new goal with exercises
-      addGoal: (exercises) => set((state) => ({
-        goals: [...state.goals, {
-          id: Date.now(),
-          createdAt: new Date().toISOString(),
-          exercises: exercises.map(exercise => ({
-            ...exercise,
-            progress: 0,
-            completed: false,
-            lastUpdated: new Date().toISOString()
-          }))
-        }]
-      })),
+      // Add new goal or update progress of existing goal
+      addOrUpdateGoal: (newExercise, mode) => set((state) => {
+        const existingGoalIndex = state.goals.findIndex(
+          goal => goal.exercise.toLowerCase() === newExercise.exercise.toLowerCase()
+        );
 
-      // Update exercise progress within a goal
-      updateExerciseProgress: (goalId, exerciseId, progress) => set((state) => ({
-        goals: state.goals.map(goal => {
-          if (goal.id === goalId) {
-            return {
-              ...goal,
-              exercises: goal.exercises.map(exercise => {
-                if (exercise.id === exerciseId) {
-                  const completed = progress >= exercise.value;
-                  return {
-                    ...exercise,
-                    progress,
-                    completed,
-                    lastUpdated: new Date().toISOString()
-                  };
-                }
-                return exercise;
-              })
+        if (existingGoalIndex !== -1) {
+          // Update existing goal
+          if (mode === 'progress') {
+            // Update progress
+            const updatedGoals = [...state.goals];
+            const existingGoal = updatedGoals[existingGoalIndex];
+            updatedGoals[existingGoalIndex] = {
+              ...existingGoal,
+              progress: existingGoal.progress + newExercise.value,
+              lastUpdated: new Date().toISOString()
             };
+            return { goals: updatedGoals };
+          } else {
+            // Update goal value
+            const updatedGoals = [...state.goals];
+            updatedGoals[existingGoalIndex] = {
+              ...updatedGoals[existingGoalIndex],
+              goalValue: newExercise.value,
+              type: newExercise.type,
+              comments: newExercise.comments,
+              lastUpdated: new Date().toISOString()
+            };
+            return { goals: updatedGoals };
           }
-          return goal;
-        })
-      })),
-
-      // Delete a goal
+        } else {
+          // Add new goal
+          const newGoal = {
+            ...newExercise,
+            id: Date.now(),
+            progress: mode === 'progress' ? newExercise.value : 0,
+            goalValue: mode === 'progress' ? 0 : newExercise.value,
+            createdAt: new Date().toISOString(),
+            lastUpdated: new Date().toISOString()
+          };
+          return { goals: [...state.goals, newGoal] };
+        }
+      }),
       deleteGoal: (goalId) => set((state) => ({
         goals: state.goals.filter(goal => goal.id !== goalId)
       })),
-
-      // Get active goal (most recent)
-      getActiveGoal: () => {
-        const goals = get().goals;
-        return goals.length > 0 ? goals[goals.length - 1] : null;
-      },
-
-      // Clear all goals
       clearGoals: () => set({ goals: [] })
     }),
     {
-      name: 'fitlog-goals',
-      // Only store necessary data
-      partialize: (state) => ({
-        goals: state.goals.map(goal => ({
-          id: goal.id,
-          createdAt: goal.createdAt,
-          exercises: goal.exercises
-        }))
-      })
+      name: 'fitness-goals',
+      getStorage: () => localStorage,
     }
   )
 );
