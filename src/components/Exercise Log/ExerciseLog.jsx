@@ -95,8 +95,7 @@ export default function ExerciseLog({ mode = "progress" }) {
         return <TimerIcon className="tw-w-5 tw-h-5" />;
       case "kms":
         return <DirectionsRunIcon className="tw-w-5 tw-h-5"/>;
-      default:
-        return <FitnessCenterIcon className="tw-w-5 tw-h-5" />;
+      
     }
   };
 
@@ -269,8 +268,8 @@ export default function ExerciseLog({ mode = "progress" }) {
               >
                 <div className="tw-flex tw-justify-between tw-items-start tw-mb-3"/>
                   <div className="tw-flex tw-items-start tw-space-x-4">
-                    <div className="tw-bg-pink-100 tw-p-2 tw-rounded-lg tw-text-blue-500">
-                      {getTypeIcon(log.reps.split(" ")[1])}
+                    <div className="tw-bg-blue-100 tw-p-2 tw-rounded-lg tw-text-blue-500">
+                    {getTypeIcon((goal.reps?.split(" ")[1]) || "")}
                     <div className="tw-bg-blue-50 tw-p-2 tw-rounded-lg tw-text-blue-500">
                       {getTypeIcon(goal.type)}
                     </div>

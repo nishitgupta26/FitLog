@@ -47,7 +47,7 @@ export default function Home() {
             </Typography>
           </div>
           <div className="tw-mt-6 sm:tw-mt-0">
-            <FitnessCenterIcon className="tw-text-white tw-opacity-20 tw-w-24 tw-h-24" />
+            <FitnessCenterIcon className="tw-text-orange-400 tw-w-24 tw-h-24" />
           </div>
         </div>
       </Paper>
@@ -55,17 +55,10 @@ export default function Home() {
       {/* Stats Grid */}
       <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
         <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-pink-200">
-          <WeeklyStreak streakData={sampleStreak} />
+          <WeeklyStreak streakData={[true,false,true,true,false,true,true]} />
         </Paper>
-        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-yellow-200"/>
+        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-yellow-200">
           <DailyProgress goal={100} progress={30} />
-        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden">
-          <WeeklyStreak
-            streakData={[true, false, true, true, false, true, true]}
-          />
-        </Paper>
-        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden">
-          <DailyProgress goal={totalGoal} progress={totalProgress} />
         </Paper>
       </div>
 
