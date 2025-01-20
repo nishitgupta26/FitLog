@@ -1,22 +1,33 @@
-import React, { useState } from "react";
+import React from "react";
 import { Paper, Typography } from "@mui/material";
 import WeeklyStreak from "../components/WeeklyStreak/WeeklyStreak";
 import DailyProgress from "../components/DailyProgress/DailyProgress";
 import ExerciseLog from "../components/Exercise Log/ExerciseLog";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import WavingHandIcon from '@mui/icons-material/WavingHand';
+import useGoalStore from "../stores/useGoalStore";
 
-export default function Home({ goal, progress }) {
-  const sampleStreak = [true, false, true, true, false, true, true];
-  const [logs, setLogs] = useState([]);
+export default function Home() {
+  const goals = useGoalStore((state) => state.goals);
+  const updateGoalProgress = useGoalStore((state) => state.updateGoalProgress);
+  const deleteGoal = useGoalStore((state) => state.deleteGoal);
 
-  const handleAddLog = (newLog) => {
-    setLogs([...logs, newLog]);
+  const handleAddLog = (log) => {
+    updateGoalProgress(log.id, log.value);
   };
 
   const handleDeleteLog = (id) => {
-    setLogs(logs.filter((log) => log.id !== id));
+    deleteGoal(id);
   };
+
+  const validGoals = goals.filter((goal) => goal.goalValue > 0);
+  const totalProgress = validGoals.reduce(
+    (acc, goal) => acc + goal.progress,
+    0
+  );
+  const totalGoal = validGoals.reduce((acc, goal) => acc + goal.goalValue, 0);
+  const progressPercentage =
+    totalGoal > 0 ? (totalProgress / totalGoal) * 100 : 0;
 
   return (
     <div className="tw-space-y-6">
@@ -46,8 +57,15 @@ export default function Home({ goal, progress }) {
         <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-pink-200">
           <WeeklyStreak streakData={sampleStreak} />
         </Paper>
-        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-yellow-200">
+        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-yellow-200"/>
           <DailyProgress goal={100} progress={30} />
+        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden">
+          <WeeklyStreak
+            streakData={[true, false, true, true, false, true, true]}
+          />
+        </Paper>
+        <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden">
+          <DailyProgress goal={totalGoal} progress={totalProgress} />
         </Paper>
       </div>
 
@@ -55,12 +73,13 @@ export default function Home({ goal, progress }) {
       <Paper elevation={0} className="tw-rounded-xl tw-overflow-hidden tw-bg-blue-200">
         <div className="tw-p-6">
           <Typography variant="h6" className="tw-font-semibold tw-mb-4">
-            Today's Exercises
+            Today's Progress
           </Typography>
           <ExerciseLog
-            logs={logs}
+            logs={goals}
             onAddLog={handleAddLog}
             onDeleteLog={handleDeleteLog}
+            mode="progress"
           />
         </div>
       </Paper>

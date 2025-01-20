@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 
 export default function DailyProgress({ goal, progress }) {
-  const percentage = Math.min((progress / goal) * 100, 100);
+  const percentage = goal > 0 ? (progress / goal) * 100 : 0;
   const isCompleted = percentage >= 100;
 
   return (

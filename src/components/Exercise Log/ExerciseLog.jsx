@@ -9,9 +9,7 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
   Paper,
-  Tooltip,
   IconButton,
   Chip,
   Fade,
@@ -21,10 +19,9 @@ import {
   LinearProgress,
 } from "@mui/material";
 import useExerciseNames from "../../stores/useExerciseNames";
+import useGoalStore from "../../stores/useGoalStore";
 
-const GOAL_VALUE = 60; // Universal goal for all exercise types
-
-export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
+export default function ExerciseLog({ mode = "progress" }) {
   const [exercise, setExercise] = useState("");
   const [reps, setReps] = useState("");
   const [type, setType] = useState("reps");
@@ -32,32 +29,49 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
   const [filteredExerciseNames, setFilteredExerciseNames] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
   const exerciseNames = useExerciseNames((state) => state.exerciseNames);
+  const goals = useGoalStore((state) => state.goals);
+  const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
+  const deleteGoal = useGoalStore((state) => state.deleteGoal);
 
   useEffect(() => {
     if (exercise.trim() === "") {
       setFilteredExerciseNames([]);
     } else {
-      const filtered = exerciseNames.filter((name) =>
+      let filtered = exerciseNames.filter((name) =>
         name.toLowerCase().includes(exercise.toLowerCase())
       );
+
+      // In progress mode, also show existing goals at the top
+      if (mode === "progress") {
+        const existingGoals = goals
+          .map((goal) => goal.exercise)
+          .filter((name) =>
+            name.toLowerCase().includes(exercise.toLowerCase())
+          );
+
+        // Remove duplicates and put existing goals first
+        filtered = [...new Set([...existingGoals, ...filtered])];
+      }
+
       setFilteredExerciseNames(filtered);
     }
-  }, [exercise, exerciseNames]);
+  }, [exercise, exerciseNames, goals, mode]);
 
   const handleAdd = async () => {
     if (exercise && reps) {
       setIsLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      onAddLog({
-        id: Date.now(),
+      const newExercise = {
         exercise,
-        reps: `${reps} ${type}`,
-        comments,
-        timestamp: new Date().toISOString(),
         value: parseInt(reps, 10),
-      });
+        type,
+        comments,
+      };
+
+      addOrUpdateGoal(newExercise, mode);
 
       setExercise("");
       setReps("");
@@ -69,6 +83,9 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
       setTimeout(() => setShowSuccess(false), 3000);
     }
   };
+
+  // Rest of the component code remains the same as in your current version,
+  // but replace logs.map() with goals.map() in the render section
 
   const getTypeIcon = (exerciseType) => {
     switch (exerciseType) {
@@ -96,32 +113,22 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
     if (hours < 24) return `${hours}h ago`;
     return `${Math.floor(hours / 24)}d ago`;
   };
-
-  const getProgressColor = (value) => {
-    const percentage = (value / GOAL_VALUE) * 100;
-    if (percentage >= 100) return "success";
-    if (percentage >= 70) return "warning";
-    return "primary";
-  };
-
-  const calculateProgress = (value) => {
-    return Math.min((value / GOAL_VALUE) * 100, 100);
-  };
-
   return (
     <div className="tw-space-y-6">
-      {/* Success Message */}
+      {/* Success Alert */}
       <Fade in={showSuccess}>
         <Alert
           severity="success"
           className="tw-absolute tw-top-4 tw-right-4"
           onClose={() => setShowSuccess(false)}
         >
-          Exercise logged successfully!
+          {mode === "progress"
+            ? "Progress logged successfully!"
+            : "Goal set successfully!"}
         </Alert>
       </Fade>
 
-      {/* Input Section */}
+      {/* Input Form */}
       <Paper
         elevation={0}
         className="tw-p-6 tw-bg-white tw-rounded-xl tw-border tw-border-gray-100"
@@ -162,14 +169,15 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
             <div className="tw-flex-1">
               <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
                 <Typography variant="caption" className="tw-text-gray-600">
-                  Count
+                  {mode === "progress" ? "Count" : "Goal Value"}
                 </Typography>
               </div>
               <input
                 type="number"
-                placeholder="Enter amount"
+                placeholder={
+                  mode === "progress" ? "Enter amount" : "Set goal value"
+                }
                 value={reps}
-                max={GOAL_VALUE}
                 onChange={(e) => setReps(e.target.value)}
                 className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-all"
               />
@@ -187,9 +195,6 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
                 sx={{
                   height: "42px",
                   ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#e5e7eb",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
                     borderColor: "#e5e7eb",
                   },
                 }}
@@ -244,7 +249,7 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
                 ) : (
                   <>
                     <AddIcon className="tw-w-5 tw-h-5" />
-                    <span>Add</span>
+                    <span>{mode === "progress" ? "Log" : "Add"}</span>
                   </>
                 )}
               </button>
@@ -253,19 +258,21 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
         </div>
       </Paper>
 
-      {/* Exercise Log List */}
+      {/* Exercise List */}
       <div className="tw-space-y-4">
-        {logs.length > 0 ? (
-          logs.map((log) => (
-            <Fade in={true} key={log.id}>
+        {goals.length > 0 ? (
+          goals.map((goal) => (
+            <Fade in={true} key={goal.id}>
               <Paper
                 elevation={0}
                 className="tw-p-4 tw-rounded-xl tw-border tw-border-gray-100 hover:tw-border-blue-100 tw-transition-all"
               >
-                <div className="tw-flex tw-justify-between tw-items-start tw-mb-3">
+                <div className="tw-flex tw-justify-between tw-items-start tw-mb-3"/>
                   <div className="tw-flex tw-items-start tw-space-x-4">
                     <div className="tw-bg-pink-100 tw-p-2 tw-rounded-lg tw-text-blue-500">
                       {getTypeIcon(log.reps.split(" ")[1])}
+                    <div className="tw-bg-blue-50 tw-p-2 tw-rounded-lg tw-text-blue-500">
+                      {getTypeIcon(goal.type)}
                     </div>
                     <div>
                       <div className="tw-flex tw-items-center tw-space-x-2">
@@ -273,34 +280,35 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
                           variant="subtitle1"
                           className="tw-font-medium"
                         >
-                          {log.exercise}
+                          {goal.exercise}
                         </Typography>
                         <Chip
-                          label={log.reps}
+                          label={`${goal.progress} / ${goal.goalValue} ${goal.type}`}
                           size="small"
                           className="tw-bg-blue-50 tw-text-blue-600"
                         />
-                        {log.timestamp && (
-                          <Typography
-                            variant="caption"
-                            className="tw-text-gray-400"
-                          >
-                            • {getTimeAgo(log.timestamp)}
-                          </Typography>
-                        )}
                       </div>
-                      {log.comments && (
+                      {goal.comments && (
                         <Typography
                           variant="body2"
                           className="tw-text-gray-500 tw-mt-1"
                         >
-                          {log.comments}
+                          {goal.comments}
+                        </Typography>
+                      )}
+                      {goal.lastUpdated && mode === "progress" && (
+                        <Typography
+                          variant="caption"
+                          className="tw-text-gray-400"
+                        >
+                          Last updated:{" "}
+                          {new Date(goal.lastUpdated).toLocaleString()}
                         </Typography>
                       )}
                     </div>
                   </div>
                   <IconButton
-                    onClick={() => onDeleteLog(log.id)}
+                    onClick={() => deleteGoal(goal.id)}
                     className="tw-text-gray-400 hover:tw-text-red-500 tw-transition-colors"
                     size="small"
                   >
@@ -308,46 +316,53 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
                   </IconButton>
                 </div>
 
-                {/* Progress Section */}
-                <div className="tw-mt-4">
-                  <div className="tw-flex tw-justify-between tw-items-center tw-mb-1">
-                    <Typography variant="caption" className="tw-text-gray-600">
-                      Progress toward goal ({GOAL_VALUE}{" "}
-                      {log.reps.split(" ")[1]})
-                    </Typography>
-                    <div className="tw-flex tw-items-center tw-space-x-2">
+                {/* Progress Bar */}
+                {goal.goalValue > 0 && (
+                  <div className="tw-mt-4">
+                    <div className="tw-flex tw-justify-between tw-items-center tw-mb-1">
                       <Typography
                         variant="caption"
                         className="tw-text-gray-600"
                       >
-                        {log.value}/{GOAL_VALUE}
+                        Progress
                       </Typography>
-                      {log.value >= GOAL_VALUE && (
-                        <Tooltip title="Goal achieved!">
+                      <div className="tw-flex tw-items-center tw-space-x-2">
+                        <Typography
+                          variant="caption"
+                          className="tw-text-gray-600"
+                        >
+                          {((goal.progress / goal.goalValue) * 100).toFixed(1)}%
+                        </Typography>
+                        {goal.progress >= goal.goalValue && (
                           <EmojiEventsIcon className="tw-w-4 tw-h-4 tw-text-yellow-500" />
-                        </Tooltip>
-                      )}
+                        )}
+                      </div>
                     </div>
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.min(
+                        (goal.progress / goal.goalValue) * 100,
+                        100
+                      )}
+                      color={
+                        goal.progress >= goal.goalValue ? "success" : "primary"
+                      }
+                      className="tw-rounded-full"
+                      sx={{
+                        height: 8,
+                        backgroundColor: "#f3f4f6",
+                      }}
+                    />
+                    {goal.progress >= goal.goalValue && (
+                      <Typography
+                        variant="caption"
+                        className="tw-text-green-600 tw-mt-2 tw-block"
+                      >
+                        🎉 Goal achieved!
+                      </Typography>
+                    )}
                   </div>
-                  <LinearProgress
-                    variant="determinate"
-                    value={calculateProgress(log.value)}
-                    color={getProgressColor(log.value)}
-                    className="tw-rounded-full"
-                    sx={{
-                      height: 8,
-                      backgroundColor: "#f3f4f6",
-                    }}
-                  />
-                  {log.value >= GOAL_VALUE && (
-                    <Typography
-                      variant="caption"
-                      className="tw-text-green-600 tw-mt-2 tw-block"
-                    >
-                      🎉 Amazing! You've reached your goal for this exercise!
-                    </Typography>
-                  )}
-                </div>
+                )}
               </Paper>
             </Fade>
           ))
@@ -355,10 +370,14 @@ export default function ExerciseLog({ logs, onAddLog, onDeleteLog }) {
           <div className="tw-text-center tw-py-12">
             <FitnessCenterIcon className="tw-w-16 tw-h-16 tw-text-gray-200 tw-mb-4" />
             <Typography variant="h6" className="tw-text-gray-400 tw-mb-2">
-              No exercises logged yet
+              {mode === "progress"
+                ? "No exercises logged yet"
+                : "No goals set yet"}
             </Typography>
             <Typography variant="body2" className="tw-text-gray-400">
-              Start tracking your workout progress by adding exercises above
+              {mode === "progress"
+                ? "Start tracking your workout progress by logging exercises above"
+                : "Start setting your fitness goals by adding exercises above"}
             </Typography>
           </div>
         )}
