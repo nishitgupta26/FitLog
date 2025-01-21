@@ -21,7 +21,7 @@ import {
 import useExerciseNames from "../../stores/useExerciseNames";
 import useGoalStore from "../../stores/useGoalStore";
 
-export default function ExerciseLog({ mode = "progress" }) {
+export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
   const [exercise, setExercise] = useState("");
   const [reps, setReps] = useState("");
   const [type, setType] = useState("reps");
@@ -31,7 +31,6 @@ export default function ExerciseLog({ mode = "progress" }) {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const exerciseNames = useExerciseNames((state) => state.exerciseNames);
-  const goals = useGoalStore((state) => state.goals);
   const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
 
@@ -43,15 +42,12 @@ export default function ExerciseLog({ mode = "progress" }) {
         name.toLowerCase().includes(exercise.toLowerCase())
       );
 
-      // In progress mode, also show existing goals at the top
       if (mode === "progress") {
         const existingGoals = goals
           .map((goal) => goal.exercise)
           .filter((name) =>
             name.toLowerCase().includes(exercise.toLowerCase())
           );
-
-        // Remove duplicates and put existing goals first
         filtered = [...new Set([...existingGoals, ...filtered])];
       }
 
@@ -84,9 +80,6 @@ export default function ExerciseLog({ mode = "progress" }) {
     }
   };
 
-  // Rest of the component code remains the same as in your current version,
-  // but replace logs.map() with goals.map() in the render section
-
   const getTypeIcon = (exerciseType) => {
     switch (exerciseType) {
       case "reps":
@@ -94,16 +87,9 @@ export default function ExerciseLog({ mode = "progress" }) {
       case "mins":
         return <TimerIcon className="tw-w-5 tw-h-5" />;
       case "kms":
-        return <DirectionsRunIcon className="tw-w-5 tw-h-5"/>;
-      
+        return <DirectionsRunIcon className="tw-w-5 tw-h-5" />;
     }
   };
-
-  const handleSuggestionClick = (name) => {
-    setExercise(name);
-    setFilteredExerciseNames([]);
-  };
-
   const getTimeAgo = (timestamp) => {
     const minutes = Math.floor((Date.now() - new Date(timestamp)) / 60000);
     if (minutes < 1) return "Just now";
@@ -112,6 +98,12 @@ export default function ExerciseLog({ mode = "progress" }) {
     if (hours < 24) return `${hours}h ago`;
     return `${Math.floor(hours / 24)}d ago`;
   };
+
+  const handleSuggestionClick = (name) => {
+    setExercise(name);
+    setFilteredExerciseNames([]);
+  };
+
   return (
     <div className="tw-space-y-6">
       {/* Success Alert */}
@@ -148,7 +140,7 @@ export default function ExerciseLog({ mode = "progress" }) {
               onChange={(e) => setExercise(e.target.value)}
               className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-all"
             />
-            {filteredExerciseNames.length > 0 && (
+            {filteredExerciseNames?.length > 0 && (
               <Paper className="tw-absolute tw-w-full tw-mt-1 tw-z-50 tw-max-h-48 tw-overflow-y-auto">
                 {filteredExerciseNames.map((name) => (
                   <MenuItem
@@ -168,7 +160,7 @@ export default function ExerciseLog({ mode = "progress" }) {
             <div className="tw-flex-1">
               <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
                 <Typography variant="caption" className="tw-text-gray-600">
-                  {mode === "progress" ? "Count" : "Goal Value"}
+                  {mode === "progress" ? "Count" : "Goal"}
                 </Typography>
               </div>
               <input
@@ -259,17 +251,17 @@ export default function ExerciseLog({ mode = "progress" }) {
 
       {/* Exercise List */}
       <div className="tw-space-y-4">
-        {goals.length > 0 ? (
+        {goals?.length > 0 ? (
           goals.map((goal) => (
             <Fade in={true} key={goal.id}>
               <Paper
                 elevation={0}
                 className="tw-p-4 tw-rounded-xl tw-border tw-border-gray-100 hover:tw-border-blue-100 tw-transition-all"
               >
-                <div className="tw-flex tw-justify-between tw-items-start tw-mb-3"/>
-                  <div className="tw-flex tw-items-start tw-space-x-4">
-                    <div className="tw-bg-blue-100 tw-p-2 tw-rounded-lg tw-text-blue-500">
-                    {getTypeIcon((goal.reps?.split(" ")[1]) || "")}
+                <div className="tw-flex tw-justify-between tw-items-start tw-mb-3" />
+                <div className="tw-flex tw-items-start tw-space-x-4">
+                  <div className="tw-bg-blue-100 tw-p-2 tw-rounded-lg tw-text-blue-500">
+                    {getTypeIcon(goal.reps?.split(" ")[1] || "")}
                     <div className="tw-bg-blue-50 tw-p-2 tw-rounded-lg tw-text-blue-500">
                       {getTypeIcon(goal.type)}
                     </div>

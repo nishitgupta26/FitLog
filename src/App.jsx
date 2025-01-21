@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import SetNewGoal from "./pages/SetNewGoal";
+import ExerciseGuide from "./pages/ExerciseGuide";
 import useExerciseNames from "./stores/useExerciseNames";
 
 function App() {
@@ -59,7 +60,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/set-goal" element={<SetNewGoal />} />
-          <Route path="/update-goal" element={<SetNewGoal />} />
+          {/* <Route path="/update-goal" element={<SetNewGoal />} /> */}
+          <Route path="/guide" element={<ExerciseGuide />} />
         </Routes>
       </div>
     </div>

@@ -54,8 +54,8 @@ export default function Navbar() {
 
   const navItems = [
     { label: "Guide", icon: <MenuBookIcon />, path: "/guide" },
-    { label: "Set New Goal", icon: <FlagIcon />, path: "/set-goal" },
-    { label: "Update Goal", icon: <EditIcon />, path: "/update-goal" },
+    { label: "Goals", icon: <FlagIcon />, path: "/set-goal" },
+    // { label: "Update Goal", icon: <EditIcon />, path: "/update-goal" },
   ];
 
   return (

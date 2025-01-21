@@ -3,56 +3,75 @@ import { persist } from 'zustand/middleware';
 
 const useGoalStore = create(
   persist(
-    (set, get) => ({
-      goals: [],
-      // Add new goal or update progress of existing goal
-      addOrUpdateGoal: (newExercise, mode) => set((state) => {
-        const existingGoalIndex = state.goals.findIndex(
-          goal => goal.exercise.toLowerCase() === newExercise.exercise.toLowerCase()
-        );
+    (set, get) => {
+      // Helper function to filter out invalid goals
+      const filterInvalidGoals = (goals) => {
+        return goals.filter(goal => !(goal.progress === 0 && goal.goalValue === 0));
+      };
 
-        if (existingGoalIndex !== -1) {
-          // Update existing goal
-          if (mode === 'progress') {
-            // Update progress
-            const updatedGoals = [...state.goals];
-            const existingGoal = updatedGoals[existingGoalIndex];
-            updatedGoals[existingGoalIndex] = {
-              ...existingGoal,
-              progress: existingGoal.progress + newExercise.value,
-              lastUpdated: new Date().toISOString()
-            };
-            return { goals: updatedGoals };
+      return {
+        goals: [],
+        // Add new goal or update progress of existing goal
+        addOrUpdateGoal: (newExercise, mode) => set((state) => {
+          const existingGoalIndex = state.goals.findIndex(
+            goal => goal.exercise.toLowerCase() === newExercise.exercise.toLowerCase()
+          );
+
+          let updatedGoals;
+
+          if (existingGoalIndex !== -1) {
+            // Update existing goal
+            updatedGoals = [...state.goals];
+            if (mode === 'progress') {
+              // Update progress
+              const existingGoal = updatedGoals[existingGoalIndex];
+              updatedGoals[existingGoalIndex] = {
+                ...existingGoal,
+                progress: newExercise.value,
+                lastUpdated: new Date().toISOString()
+              };
+            } else {
+              // Update goal value
+              updatedGoals[existingGoalIndex] = {
+                ...updatedGoals[existingGoalIndex],
+                goalValue: newExercise.value,
+                type: newExercise.type,
+                comments: newExercise.comments,
+                lastUpdated: new Date().toISOString()
+              };
+            }
           } else {
-            // Update goal value
-            const updatedGoals = [...state.goals];
-            updatedGoals[existingGoalIndex] = {
-              ...updatedGoals[existingGoalIndex],
-              goalValue: newExercise.value,
-              type: newExercise.type,
-              comments: newExercise.comments,
+            // Add new goal
+            const newGoal = {
+              ...newExercise,
+              id: Date.now(),
+              progress: mode === 'progress' ? newExercise.value : 0,
+              goalValue: mode === 'progress' ? 0 : newExercise.value,
+              createdAt: new Date().toISOString(),
               lastUpdated: new Date().toISOString()
             };
-            return { goals: updatedGoals };
+            updatedGoals = [...state.goals, newGoal];
           }
-        } else {
-          // Add new goal
-          const newGoal = {
-            ...newExercise,
-            id: Date.now(),
-            progress: mode === 'progress' ? newExercise.value : 0,
-            goalValue: mode === 'progress' ? 0 : newExercise.value,
-            createdAt: new Date().toISOString(),
+
+          // Filter out invalid goals before returning
+          return { goals: filterInvalidGoals(updatedGoals) };
+        }),
+
+        deleteGoal: (goalId) => set((state) => ({
+          goals: filterInvalidGoals(state.goals.filter(goal => goal.id !== goalId))
+        })),
+
+        clearGoals: () => set({ goals: [] }),
+
+        resetAllGoalValues: () => set((state) => ({
+          goals: filterInvalidGoals(state.goals.map(goal => ({
+            ...goal,
+            goalValue: 0,
             lastUpdated: new Date().toISOString()
-          };
-          return { goals: [...state.goals, newGoal] };
-        }
-      }),
-      deleteGoal: (goalId) => set((state) => ({
-        goals: state.goals.filter(goal => goal.id !== goalId)
-      })),
-      clearGoals: () => set({ goals: [] })
-    }),
+          })))
+        })),
+      };
+    },
     {
       name: 'fitness-goals',
       getStorage: () => localStorage,
