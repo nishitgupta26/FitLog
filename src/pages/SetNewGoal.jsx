@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Paper,
@@ -15,11 +15,19 @@ import useGoalStore from "../stores/useGoalStore";
 
 export default function SetNewGoal() {
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
-  const goals = useGoalStore((state) => state.goals);
+  const [goals, setGoals] = useState([]);
   const resetAllGoalValues = useGoalStore((state) => state.resetAllGoalValues);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
   const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
 
+  const goalState = useGoalStore((state) => state.goals);
+
+  useEffect(() => {
+    const activeGoals = goalState.filter((goal) => goal.goalValue > 0);
+    setGoals(activeGoals); // Use filtered goals
+  }, [goalState]);
+
+  // console.log(goals, goalState);
   const handleResetConfirm = () => {
     resetAllGoalValues();
     setResetDialogOpen(false);
@@ -94,6 +102,7 @@ export default function SetNewGoal() {
 
             <div className="tw-p-6 sm:tw-p-8">
               <ExerciseLog
+                goals={goals}
                 onAddGoal={addOrUpdateGoal}
                 onDeleteGoal={deleteGoal}
                 mode="goal"

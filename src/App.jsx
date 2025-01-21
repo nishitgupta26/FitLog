@@ -60,7 +60,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/set-goal" element={<SetNewGoal />} />
-          <Route path="/update-goal" element={<SetNewGoal />} />
+          {/* <Route path="/update-goal" element={<SetNewGoal />} /> */}
           <Route path="/guide" element={<ExerciseGuide />} />
         </Routes>
       </div>

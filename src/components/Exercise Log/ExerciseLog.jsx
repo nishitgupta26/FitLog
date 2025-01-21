@@ -21,7 +21,7 @@ import {
 import useExerciseNames from "../../stores/useExerciseNames";
 import useGoalStore from "../../stores/useGoalStore";
 
-export default function ExerciseLog({ mode }) {
+export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
   const [exercise, setExercise] = useState("");
   const [reps, setReps] = useState("");
   const [type, setType] = useState("reps");
@@ -29,23 +29,11 @@ export default function ExerciseLog({ mode }) {
   const [filteredExerciseNames, setFilteredExerciseNames] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [goals, setGoals] = useState([]);
 
   const exerciseNames = useExerciseNames((state) => state.exerciseNames);
   const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
-  const goalState = useGoalStore((state) => state.goals);
 
-  useEffect(() => {
-    if (mode === "goal") {
-      let activeGoals = goalState.filter(
-        (goalState) => goalState.goalValue > 0
-      );
-      setGoals(activeGoals);
-    } else {
-      setGoals(goalState);
-    }
-  }, [mode, goalState]);
   useEffect(() => {
     if (exercise.trim() === "") {
       setFilteredExerciseNames([]);
@@ -54,15 +42,12 @@ export default function ExerciseLog({ mode }) {
         name.toLowerCase().includes(exercise.toLowerCase())
       );
 
-      // In progress mode, also show existing goals at the top
       if (mode === "progress") {
         const existingGoals = goals
           .map((goal) => goal.exercise)
           .filter((name) =>
             name.toLowerCase().includes(exercise.toLowerCase())
           );
-
-        // Remove duplicates and put existing goals first
         filtered = [...new Set([...existingGoals, ...filtered])];
       }
 
@@ -95,9 +80,6 @@ export default function ExerciseLog({ mode }) {
     }
   };
 
-  // Rest of the component code remains the same as in your current version,
-  // but replace logs.map() with goals.map() in the render section
-
   const getTypeIcon = (exerciseType) => {
     switch (exerciseType) {
       case "reps":
@@ -105,16 +87,9 @@ export default function ExerciseLog({ mode }) {
       case "mins":
         return <TimerIcon className="tw-w-5 tw-h-5" />;
       case "kms":
-        return <DirectionsRunIcon className="tw-w-5 tw-h-5"/>;
-      
+        return <DirectionsRunIcon className="tw-w-5 tw-h-5" />;
     }
   };
-
-  const handleSuggestionClick = (name) => {
-    setExercise(name);
-    setFilteredExerciseNames([]);
-  };
-
   const getTimeAgo = (timestamp) => {
     const minutes = Math.floor((Date.now() - new Date(timestamp)) / 60000);
     if (minutes < 1) return "Just now";
@@ -123,6 +98,12 @@ export default function ExerciseLog({ mode }) {
     if (hours < 24) return `${hours}h ago`;
     return `${Math.floor(hours / 24)}d ago`;
   };
+
+  const handleSuggestionClick = (name) => {
+    setExercise(name);
+    setFilteredExerciseNames([]);
+  };
+
   return (
     <div className="tw-space-y-6">
       {/* Success Alert */}
@@ -277,10 +258,10 @@ export default function ExerciseLog({ mode }) {
                 elevation={0}
                 className="tw-p-4 tw-rounded-xl tw-border tw-border-gray-100 hover:tw-border-blue-100 tw-transition-all"
               >
-                <div className="tw-flex tw-justify-between tw-items-start tw-mb-3"/>
-                  <div className="tw-flex tw-items-start tw-space-x-4">
-                    <div className="tw-bg-blue-100 tw-p-2 tw-rounded-lg tw-text-blue-500">
-                    {getTypeIcon((goal.reps?.split(" ")[1]) || "")}
+                <div className="tw-flex tw-justify-between tw-items-start tw-mb-3" />
+                <div className="tw-flex tw-items-start tw-space-x-4">
+                  <div className="tw-bg-blue-100 tw-p-2 tw-rounded-lg tw-text-blue-500">
+                    {getTypeIcon(goal.reps?.split(" ")[1] || "")}
                     <div className="tw-bg-blue-50 tw-p-2 tw-rounded-lg tw-text-blue-500">
                       {getTypeIcon(goal.type)}
                     </div>
