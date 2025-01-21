@@ -1,20 +1,47 @@
-import React, { useState, useEffect } from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import { Paper } from "@mui/material";
+import React, { useState, useEffect } from 'react';
+import { 
+  PhotoCamera, 
+  Email, 
+  Phone, 
+  Person, 
+  Save, 
+  Refresh, 
+  Edit,
+  LinkedIn,
+  Instagram,
+  GitHub,
+  LocationOn,
+  FitnessCenter
+} from '@mui/icons-material';
+import { 
+  Card, 
+  CardContent,
+  TextField,
+  Button,
+  Avatar,
+  Chip,
+  IconButton,
+  Snackbar,
+  Alert,
+  Container,
+  Box,
+  LinearProgress,
+  Typography
+} from '@mui/material';
 
-export default function Profile() {
+const Profile = () => {
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
     aboutMe: "",
+    location: "",
+    fitnessGoal: ""
   });
+  
+  const [showAlert, setShowAlert] = useState(false);
 
-  // Load data from local storage on component mount
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("profileData"));
     if (storedData) {
@@ -22,135 +49,289 @@ export default function Profile() {
     }
   }, []);
 
-  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfileData((prevData) => ({
+    setProfileData(prevData => ({
       ...prevData,
       [name]: value,
     }));
   };
 
-  // Save data to local storage and reset fields
   const handleSave = () => {
     localStorage.setItem("profileData", JSON.stringify(profileData));
-    alert("Profile saved successfully!");
-    setProfileData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      aboutMe: "",
-    });
+    setShowAlert(true);
   };
-
-  // Reset fields without saving
   const handleCancel = () => {
-    setProfileData({
+    const updatedData = {
+      email: profileData.email, // Retain only the email
       firstName: "",
       lastName: "",
-      email: "",
       phone: "",
+      location:"",
       aboutMe: "",
-    });
+    };
+  
+    setProfileData(updatedData); // Update state
+    localStorage.setItem("profileData", JSON.stringify(updatedData)); // Save to localStorage
+    setShowAlert(true); // Optional: Show alert if needed
   };
+  
+  const handleCloseAlert = () => setShowAlert(false);
 
-  // Get profile name from state or local storage
   const storedData = JSON.parse(localStorage.getItem("profileData"));
   const firstName = storedData?.firstName || "John";
   const lastName = storedData?.lastName || "Doe";
-  const aboutMe =
-    storedData?.aboutMe || "Fitness Enthusiast | Goal Setter | Achiever";
+  const aboutMe = storedData?.aboutMe || "Fitness Enthusiast | Goal Setter | Achiever";
+
+  const skills = [
+    "Weight Training",
+    "Cardio",
+    "Nutrition",
+    "Yoga",
+    "HIIT",
+    "Marathon Runner"
+  ];
+
+  const achievements = [
+    { title: "Workouts", value: 85, total: 100 },
+    { title: "Goals Met", value: 12, total: 15 },
+    { title: "Active Days", value: 28, total: 30 }
+  ];
 
   return (
-    <div className="tw-flex tw-justify-center tw-items-center tw-w-full tw-h-full">
-      <Paper
-        elevation={3}
-        className="tw-bg-white tw-rounded-lg tw-px-8 tw-py-6 tw-w-full md:tw-w-2/3 lg:tw-w-1/2 tw-shadow-lg tw-space-y-6"
-      >
-        <div className="tw-flex tw-flex-col tw-items-center tw-space-y-4">
-          <Avatar
-            src="/profile-placeholder.png"
-            alt={firstName}
-            className="tw-h-24 tw-w-24 tw-bg-blue-500"
-          />
-          <h1 className="tw-text-xl tw-font-bold tw-text-gray-700">
-            {firstName} {lastName}
-          </h1>
-          <p className="tw-text-gray-500 tw-text-sm">{aboutMe}</p>
-        </div>
-
-        <form className="tw-space-y-4">
-          <Box className="tw-flex tw-flex-col md:tw-flex-row tw-gap-4">
-            <TextField
-              label="First Name"
-              name="firstName"
-              value={profileData.firstName}
-              onChange={handleInputChange}
-              variant="outlined"
-              fullWidth
-              className="tw-bg-white"
-            />
-            <TextField
-              label="Last Name"
-              name="lastName"
-              value={profileData.lastName}
-              onChange={handleInputChange}
-              variant="outlined"
-              fullWidth
-              className="tw-bg-white"
-            />
+    <Box 
+      sx={{ 
+        minHeight: '100vh',
+        backgroundColor: '#f3f4f6',
+        py: 4
+      }}
+    >
+      <Container maxWidth="lg">
+        <Card 
+          sx={{ 
+            borderRadius: 2,
+            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)'
+          }}
+        >
+          {/* Profile Header */}
+          <Box className= 'tw-bg-blue-500'
+            sx={{ 
+              height: 200, 
+              position: 'relative',
+              mb: 8
+            }}
+          >
+            <Box sx={{ position: 'absolute', bottom: -32, left: { xs: '50%', md: 40 }, transform: { xs: 'translateX(-50%)', md: 'translateX(0)' } }}>
+              <Avatar
+                sx={{ 
+                  width: 120, 
+                  height: 120, 
+                  border: '4px solid white',
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
+                }}
+              >
+                {firstName[0]}{lastName[0]}
+              </Avatar>
+            </Box>
           </Box>
-          <TextField
-            label="Email"
-            name="email"
-            value={profileData.email}
-            onChange={handleInputChange}
-            variant="outlined"
-            fullWidth
-            className="tw-bg-white"
-          />
-          <TextField
-            label="Phone Number"
-            name="phone"
-            value={profileData.phone}
-            onChange={handleInputChange}
-            variant="outlined"
-            fullWidth
-            className="tw-bg-white"
-          />
-          <TextField
-            label="About Me"
-            name="aboutMe"
-            value={profileData.aboutMe}
-            onChange={handleInputChange}
-            variant="outlined"
-            multiline
-            rows={4}
-            fullWidth
-            className="tw-bg-white"
-          />
-        </form>
 
-        <div className="tw-flex tw-justify-between tw-items-center tw-space-y-2">
-          <Button
-            variant="contained"
-            color="primary"
-            className="tw-bg-blue-500 hover:tw-bg-blue-600 tw-w-1/3 tw-py-2 tw-font-medium tw-text-white"
-            onClick={handleSave}
+          <CardContent sx={{ px: { xs: 2, md: 4 }, pb: 4 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
+              {/* Main Content */}
+              <Box sx={{ flex: 2 }}>
+                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>Personal Information</Typography>
+                
+                <Box sx={{ display: 'grid', gap: 3 }}>
+                  {/* Name Fields */}
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+                    <TextField
+                      fullWidth
+                      label="First Name"
+                      name="firstName"
+                      value={profileData.firstName}
+                      onChange={handleInputChange}
+                      InputProps={{
+                        startAdornment: <Person sx={{ color: 'text.secondary', mr: 1 }} />
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Last Name"
+                      name="lastName"
+                      value={profileData.lastName}
+                      onChange={handleInputChange}
+                      InputProps={{
+                        startAdornment: <Person sx={{ color: 'text.secondary', mr: 1 }} />
+                      }}
+                    />
+                  </Box>
+
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    value={profileData.email}
+                    onChange={handleInputChange}
+                    InputProps={{
+                      readOnly: true,
+                      startAdornment: <Email sx={{ color: 'text.secondary', mr: 1 }} />
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Phone"
+                    name="phone"
+                    value={profileData.phone}
+                    onChange={handleInputChange}
+                    InputProps={{
+                      startAdornment: <Phone sx={{ color: 'text.secondary', mr: 1 }} />
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Location"
+                    name="location"
+                    value={profileData.location}
+                    onChange={handleInputChange}
+                    InputProps={{
+                      startAdornment: <LocationOn sx={{ color: 'text.secondary', mr: 1 }} />
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="About Me"
+                    name="aboutMe"
+                    value={profileData.aboutMe}
+                    onChange={handleInputChange}
+                    multiline
+                    rows={4}
+                    InputProps={{
+                      startAdornment: <Edit sx={{ color: 'text.secondary', mr: 1, mt: 1.5 }} />
+                    }}
+                  />
+                </Box>
+              </Box>
+
+              {/* Side Content */}
+              <Box sx={{ flex: 1 }}>
+                {/* Progress Section */}
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>Progress</Typography>
+                <Card sx={{ mb: 4, p: 2, backgroundColor: '#f8fafc' }}>
+                  {achievements.map((achievement, index) => (
+                    <Box key={index} sx={{ mb: 2 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          {achievement.title}
+                        </Typography>
+                        <Typography variant="body2" fontWeight="medium">
+                          {achievement.value}/{achievement.total}
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate" 
+                        value={(achievement.value / achievement.total) * 100}
+                        sx={{ 
+                          height: 6, 
+                          borderRadius: 3,
+                          bgcolor: 'rgba(0,0,0,0.1)',
+                          '.MuiLinearProgress-bar': {
+                            bgcolor: '#4caf50'
+                          }
+                        }}
+                      />
+                    </Box>
+                  ))}
+                </Card>
+
+                {/* Skills Section */}
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>Skills</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4 }}>
+                  {skills.map((skill, index) => (
+                    <Chip 
+                      key={index}
+                      label={skill}
+                      sx={{
+                        backgroundColor: '#1e88e5',
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: '#1976d2'
+                        }
+                      }}
+                    />
+                  ))}
+                </Box>
+
+                {/* Social Links */}
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>Connect</Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton sx={{ bgcolor: '#f3f4f6', '&:hover': { bgcolor: '#e5e7eb' } }}>
+                    <LinkedIn sx={{ color: '#1e88e5' }} />
+                  </IconButton>
+                  <IconButton sx={{ bgcolor: '#f3f4f6', '&:hover': { bgcolor: '#e5e7eb' } }}>
+                    <Instagram sx={{ color: '#1e88e5' }} />
+                  </IconButton>
+                  <IconButton sx={{ bgcolor: '#f3f4f6', '&:hover': { bgcolor: '#e5e7eb' } }}>
+                    <GitHub sx={{ color: '#1e88e5' }} />
+                  </IconButton>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Action Buttons */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+              <Button
+                variant="outlined"
+                startIcon={<Refresh />}
+                onClick={handleCancel}
+                sx={{
+                  borderColor: '#d1d5db',
+                  color: '#4b5563',
+                  '&:hover': {
+                    borderColor: '#9ca3af',
+                    backgroundColor: '#f9fafb'
+                  }
+                }}
+              >
+                Reset
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<Save />}
+                onClick={handleSave}
+                sx={{
+                  bgcolor: '#1e88e5',
+                  '&:hover': {
+                    bgcolor: '#1976d2'
+                  }
+                }}
+              >
+                Save Changes
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Snackbar 
+          open={showAlert} 
+          autoHideDuration={3000} 
+          onClose={handleCloseAlert}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert 
+            onClose={handleCloseAlert} 
+            severity="success" 
+            sx={{ width: '100%' }}
+            elevation={6}
           >
-            Save
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            className="tw-border-red-500 hover:tw-bg-red-100 tw-w-1/3 tw-py-2 tw-font-medium tw-text-red-500"
-            onClick={handleCancel}
-          >
-            Cancel
-          </Button>
-        </div>
-      </Paper>
-    </div>
+            Profile updated successfully!
+          </Alert>
+        </Snackbar>
+      </Container>
+    </Box>
   );
-}
+};
+
+export default Profile;
