@@ -21,7 +21,7 @@ import {
 import useExerciseNames from "../../stores/useExerciseNames";
 import useGoalStore from "../../stores/useGoalStore";
 
-export default function ExerciseLog({ mode = "progress" }) {
+export default function ExerciseLog({ mode }) {
   const [exercise, setExercise] = useState("");
   const [reps, setReps] = useState("");
   const [type, setType] = useState("reps");
@@ -29,12 +29,23 @@ export default function ExerciseLog({ mode = "progress" }) {
   const [filteredExerciseNames, setFilteredExerciseNames] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [goals, setGoals] = useState([]);
 
   const exerciseNames = useExerciseNames((state) => state.exerciseNames);
-  const goals = useGoalStore((state) => state.goals);
   const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
+  const goalState = useGoalStore((state) => state.goals);
 
+  useEffect(() => {
+    if (mode === "goal") {
+      let activeGoals = goalState.filter(
+        (goalState) => goalState.goalValue > 0
+      );
+      setGoals(activeGoals);
+    } else {
+      setGoals(goalState);
+    }
+  }, [mode, goalState]);
   useEffect(() => {
     if (exercise.trim() === "") {
       setFilteredExerciseNames([]);
@@ -148,7 +159,7 @@ export default function ExerciseLog({ mode = "progress" }) {
               onChange={(e) => setExercise(e.target.value)}
               className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-all"
             />
-            {filteredExerciseNames.length > 0 && (
+            {filteredExerciseNames?.length > 0 && (
               <Paper className="tw-absolute tw-w-full tw-mt-1 tw-z-50 tw-max-h-48 tw-overflow-y-auto">
                 {filteredExerciseNames.map((name) => (
                   <MenuItem
@@ -168,7 +179,7 @@ export default function ExerciseLog({ mode = "progress" }) {
             <div className="tw-flex-1">
               <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
                 <Typography variant="caption" className="tw-text-gray-600">
-                  {mode === "progress" ? "Count" : "Goal Value"}
+                  {mode === "progress" ? "Count" : "Goal"}
                 </Typography>
               </div>
               <input
@@ -259,7 +270,7 @@ export default function ExerciseLog({ mode = "progress" }) {
 
       {/* Exercise List */}
       <div className="tw-space-y-4">
-        {goals.length > 0 ? (
+        {goals?.length > 0 ? (
           goals.map((goal) => (
             <Fade in={true} key={goal.id}>
               <Paper

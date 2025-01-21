@@ -1,20 +1,28 @@
-import React from "react";
-import { Typography, Paper } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Typography,
+  Paper,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GoalIllustration from "../assets/goal_illustration.svg";
 import ExerciseLog from "../components/Exercise Log/ExerciseLog";
 import useGoalStore from "../stores/useGoalStore";
 
 export default function SetNewGoal() {
-  const addGoal = useGoalStore((state) => state.addGoal);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const goals = useGoalStore((state) => state.goals);
+  const resetAllGoalValues = useGoalStore((state) => state.resetAllGoalValues);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
+  const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
 
-  const handleAddLog = (newLog) => {
-    addGoal(newLog);
-  };
-
-  const handleDeleteLog = (id) => {
-    deleteGoal(id);
+  const handleResetConfirm = () => {
+    resetAllGoalValues();
+    setResetDialogOpen(false);
   };
 
   return (
@@ -70,37 +78,60 @@ export default function SetNewGoal() {
                         } added to your goal`}
                   </Typography>
                 </div>
+                {goals.length > 0 && (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<RestartAltIcon />}
+                    onClick={() => setResetDialogOpen(true)}
+                    className="tw-whitespace-nowrap"
+                  >
+                    Reset All Goals
+                  </Button>
+                )}
               </div>
             </div>
 
             <div className="tw-p-6 sm:tw-p-8">
               <ExerciseLog
-                logs={goals}
-                onAddLog={handleAddLog}
-                onDeleteLog={handleDeleteLog}
+                onAddGoal={addOrUpdateGoal}
+                onDeleteGoal={deleteGoal}
                 mode="goal"
               />
-
-              {goals.length === 0 && (
-                <div className="tw-mt-8 tw-bg-blue-50 tw-rounded-xl tw-p-4 sm:tw-p-6">
-                  <Typography
-                    variant="subtitle2"
-                    className="tw-font-semibold tw-text-blue-800 tw-mb-2"
-                  >
-                    Quick Tips:
-                  </Typography>
-                  <ul className="tw-space-y-2 tw-text-sm tw-text-blue-700">
-                    <li>• Start with 3-5 exercises for a balanced goal</li>
-                    <li>• Mix cardio and strength exercises</li>
-                    <li>• Set realistic repetitions or durations</li>
-                    <li>• Add notes to track specific targets</li>
-                  </ul>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </Paper>
+
+      {/* Reset Confirmation Dialog */}
+      <Dialog
+        open={resetDialogOpen}
+        onClose={() => setResetDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle className="tw-text-red-600">Reset All Goals?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" className="tw-text-gray-600">
+            This will reset all your goal values to zero. Your progress for each
+            exercise will remain unchanged. Goals with both zero progress and
+            zero goals will be removed automatically. This action cannot be
+            undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions className="tw-p-6">
+          <Button onClick={() => setResetDialogOpen(false)} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleResetConfirm}
+            variant="contained"
+            color="error"
+          >
+            Reset Goals
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

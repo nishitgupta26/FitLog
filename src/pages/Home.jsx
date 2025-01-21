@@ -21,10 +21,12 @@ export default function Home() {
   };
 
   const validGoals = goals.filter((goal) => goal.goalValue > 0);
-  const totalProgress = validGoals.reduce(
-    (acc, goal) => acc + goal.progress,
-    0
-  );
+  const totalProgress = validGoals.reduce((acc, goal) => {
+    const progressToAdd =
+      goal.progress > goal.goalValue ? goal.goalValue : goal.progress;
+    return acc + progressToAdd;
+  }, 0);
+
   const totalGoal = validGoals.reduce((acc, goal) => acc + goal.goalValue, 0);
   const progressPercentage =
     totalGoal > 0 ? (totalProgress / totalGoal) * 100 : 0;
@@ -69,7 +71,6 @@ export default function Home() {
             Today's Progress
           </Typography>
           <ExerciseLog
-            logs={goals}
             onAddLog={handleAddLog}
             onDeleteLog={handleDeleteLog}
             mode="progress"
