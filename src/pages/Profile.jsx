@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  PhotoCamera, 
-  Email, 
-  Phone, 
-  Person, 
-  Save, 
-  Refresh, 
+import React, { useState, useEffect } from "react";
+import {
+  PhotoCamera,
+  Email,
+  Phone,
+  Person,
+  Save,
+  Refresh,
   Edit,
   LinkedIn,
   Instagram,
   GitHub,
   LocationOn,
-  FitnessCenter
-} from '@mui/icons-material';
-import { 
-  Card, 
+  FitnessCenter,
+} from "@mui/icons-material";
+import {
+  Card,
   CardContent,
   TextField,
   Button,
@@ -26,8 +26,8 @@ import {
   Container,
   Box,
   LinearProgress,
-  Typography
-} from '@mui/material';
+  Typography,
+} from "@mui/material";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -37,9 +37,9 @@ const Profile = () => {
     phone: "",
     aboutMe: "",
     location: "",
-    fitnessGoal: ""
+    fitnessGoal: "",
   });
-  
+
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const Profile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfileData(prevData => ({
+    setProfileData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -61,27 +61,29 @@ const Profile = () => {
     localStorage.setItem("profileData", JSON.stringify(profileData));
     setShowAlert(true);
   };
-  const handleCancel = () => {
+
+  const handleReset = () => {
     const updatedData = {
       email: profileData.email, // Retain only the email
       firstName: "",
       lastName: "",
       phone: "",
-      location:"",
+      location: "",
       aboutMe: "",
     };
-  
+
     setProfileData(updatedData); // Update state
     localStorage.setItem("profileData", JSON.stringify(updatedData)); // Save to localStorage
     setShowAlert(true); // Optional: Show alert if needed
   };
-  
+
   const handleCloseAlert = () => setShowAlert(false);
 
   const storedData = JSON.parse(localStorage.getItem("profileData"));
   const firstName = storedData?.firstName || "John";
   const lastName = storedData?.lastName || "Doe";
-  const aboutMe = storedData?.aboutMe || "Fitness Enthusiast | Goal Setter | Achiever";
+  const aboutMe =
+    storedData?.aboutMe || "Fitness Enthusiast | Goal Setter | Achiever";
 
   const skills = [
     "Weight Training",
@@ -89,61 +91,88 @@ const Profile = () => {
     "Nutrition",
     "Yoga",
     "HIIT",
-    "Marathon Runner"
+    "Marathon Runner",
   ];
 
   const achievements = [
     { title: "Workouts", value: 85, total: 100 },
     { title: "Goals Met", value: 12, total: 15 },
-    { title: "Active Days", value: 28, total: 30 }
+    { title: "Active Days", value: 28, total: 30 },
   ];
 
+  // Check if email is already set
+  const isEmailSet = Boolean(storedData?.email);
+
   return (
-    <Box 
-      sx={{ 
-        minHeight: '100vh',
-        backgroundColor: '#f3f4f6',
-        py: 4
+    <Box
+      sx={{
+        minHeight: "100vh",
+        backgroundColor: "#f3f4f6",
+        py: 4,
       }}
     >
       <Container maxWidth="lg">
-        <Card 
-          sx={{ 
+        <Card
+          sx={{
             borderRadius: 2,
-            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)'
+            boxShadow:
+              "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
           }}
         >
           {/* Profile Header */}
-          <Box className= 'tw-bg-blue-500'
-            sx={{ 
-              height: 200, 
-              position: 'relative',
-              mb: 8
+          <Box
+            className="tw-bg-blue-500"
+            sx={{
+              height: 200,
+              position: "relative",
+              mb: 8,
             }}
           >
-            <Box sx={{ position: 'absolute', bottom: -32, left: { xs: '50%', md: 40 }, transform: { xs: 'translateX(-50%)', md: 'translateX(0)' } }}>
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: -32,
+                left: { xs: "50%", md: 40 },
+                transform: { xs: "translateX(-50%)", md: "translateX(0)" },
+              }}
+            >
               <Avatar
-                sx={{ 
-                  width: 120, 
-                  height: 120, 
-                  border: '4px solid white',
-                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
+                sx={{
+                  width: 120,
+                  height: 120,
+                  border: "4px solid white",
+                  boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
                 }}
               >
-                {firstName[0]}{lastName[0]}
+                {firstName[0]}
+                {lastName[0]}
               </Avatar>
             </Box>
           </Box>
 
           <CardContent sx={{ px: { xs: 2, md: 4 }, pb: 4 }}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                gap: 4,
+              }}
+            >
               {/* Main Content */}
               <Box sx={{ flex: 2 }}>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>Personal Information</Typography>
-                
-                <Box sx={{ display: 'grid', gap: 3 }}>
+                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                  Personal Information
+                </Typography>
+
+                <Box sx={{ display: "grid", gap: 3 }}>
                   {/* Name Fields */}
-                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                      gap: 2,
+                    }}
+                  >
                     <TextField
                       fullWidth
                       label="First Name"
@@ -151,7 +180,9 @@ const Profile = () => {
                       value={profileData.firstName}
                       onChange={handleInputChange}
                       InputProps={{
-                        startAdornment: <Person sx={{ color: 'text.secondary', mr: 1 }} />
+                        startAdornment: (
+                          <Person sx={{ color: "text.secondary", mr: 1 }} />
+                        ),
                       }}
                     />
                     <TextField
@@ -161,7 +192,9 @@ const Profile = () => {
                       value={profileData.lastName}
                       onChange={handleInputChange}
                       InputProps={{
-                        startAdornment: <Person sx={{ color: 'text.secondary', mr: 1 }} />
+                        startAdornment: (
+                          <Person sx={{ color: "text.secondary", mr: 1 }} />
+                        ),
                       }}
                     />
                   </Box>
@@ -172,9 +205,11 @@ const Profile = () => {
                     name="email"
                     value={profileData.email}
                     onChange={handleInputChange}
+                    disabled={isEmailSet}
                     InputProps={{
-                      readOnly: true,
-                      startAdornment: <Email sx={{ color: 'text.secondary', mr: 1 }} />
+                      startAdornment: (
+                        <Email sx={{ color: "text.secondary", mr: 1 }} />
+                      ),
                     }}
                   />
 
@@ -185,7 +220,9 @@ const Profile = () => {
                     value={profileData.phone}
                     onChange={handleInputChange}
                     InputProps={{
-                      startAdornment: <Phone sx={{ color: 'text.secondary', mr: 1 }} />
+                      startAdornment: (
+                        <Phone sx={{ color: "text.secondary", mr: 1 }} />
+                      ),
                     }}
                   />
 
@@ -196,7 +233,9 @@ const Profile = () => {
                     value={profileData.location}
                     onChange={handleInputChange}
                     InputProps={{
-                      startAdornment: <LocationOn sx={{ color: 'text.secondary', mr: 1 }} />
+                      startAdornment: (
+                        <LocationOn sx={{ color: "text.secondary", mr: 1 }} />
+                      ),
                     }}
                   />
 
@@ -209,7 +248,11 @@ const Profile = () => {
                     multiline
                     rows={4}
                     InputProps={{
-                      startAdornment: <Edit sx={{ color: 'text.secondary', mr: 1, mt: 1.5 }} />
+                      startAdornment: (
+                        <Edit
+                          sx={{ color: "text.secondary", mr: 1, mt: 1.5 }}
+                        />
+                      ),
                     }}
                   />
                 </Box>
@@ -218,11 +261,19 @@ const Profile = () => {
               {/* Side Content */}
               <Box sx={{ flex: 1 }}>
                 {/* Progress Section */}
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>Progress</Typography>
-                <Card sx={{ mb: 4, p: 2, backgroundColor: '#f8fafc' }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  Progress
+                </Typography>
+                <Card sx={{ mb: 4, p: 2, backgroundColor: "#f8fafc" }}>
                   {achievements.map((achievement, index) => (
                     <Box key={index} sx={{ mb: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
                         <Typography variant="body2" color="text.secondary">
                           {achievement.title}
                         </Typography>
@@ -231,15 +282,15 @@ const Profile = () => {
                         </Typography>
                       </Box>
                       <LinearProgress
-                        variant="determinate" 
+                        variant="determinate"
                         value={(achievement.value / achievement.total) * 100}
-                        sx={{ 
-                          height: 6, 
+                        sx={{
+                          height: 6,
                           borderRadius: 3,
-                          bgcolor: 'rgba(0,0,0,0.1)',
-                          '.MuiLinearProgress-bar': {
-                            bgcolor: '#4caf50'
-                          }
+                          bgcolor: "rgba(0,0,0,0.1)",
+                          ".MuiLinearProgress-bar": {
+                            bgcolor: "#4caf50",
+                          },
                         }}
                       />
                     </Box>
@@ -247,52 +298,78 @@ const Profile = () => {
                 </Card>
 
                 {/* Skills Section */}
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>Skills</Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4 }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  Skills
+                </Typography>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 4 }}>
                   {skills.map((skill, index) => (
-                    <Chip 
+                    <Chip
                       key={index}
                       label={skill}
                       sx={{
-                        backgroundColor: '#1e88e5',
-                        color: 'white',
-                        '&:hover': {
-                          backgroundColor: '#1976d2'
-                        }
+                        backgroundColor: "#1e88e5",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#1976d2",
+                        },
                       }}
                     />
                   ))}
                 </Box>
 
                 {/* Social Links */}
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>Connect</Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton sx={{ bgcolor: '#f3f4f6', '&:hover': { bgcolor: '#e5e7eb' } }}>
-                    <LinkedIn sx={{ color: '#1e88e5' }} />
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  Connect
+                </Typography>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <IconButton
+                    sx={{
+                      bgcolor: "#f3f4f6",
+                      "&:hover": { bgcolor: "#e5e7eb" },
+                    }}
+                  >
+                    <LinkedIn sx={{ color: "#1e88e5" }} />
                   </IconButton>
-                  <IconButton sx={{ bgcolor: '#f3f4f6', '&:hover': { bgcolor: '#e5e7eb' } }}>
-                    <Instagram sx={{ color: '#1e88e5' }} />
+                  <IconButton
+                    sx={{
+                      bgcolor: "#f3f4f6",
+                      "&:hover": { bgcolor: "#e5e7eb" },
+                    }}
+                  >
+                    <Instagram sx={{ color: "#1e88e5" }} />
                   </IconButton>
-                  <IconButton sx={{ bgcolor: '#f3f4f6', '&:hover': { bgcolor: '#e5e7eb' } }}>
-                    <GitHub sx={{ color: '#1e88e5' }} />
+                  <IconButton
+                    sx={{
+                      bgcolor: "#f3f4f6",
+                      "&:hover": { bgcolor: "#e5e7eb" },
+                    }}
+                  >
+                    <GitHub sx={{ color: "#1e88e5" }} />
                   </IconButton>
                 </Box>
               </Box>
             </Box>
 
             {/* Action Buttons */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+                mt: 4,
+              }}
+            >
               <Button
                 variant="outlined"
                 startIcon={<Refresh />}
-                onClick={handleCancel}
+                onClick={handleReset}
                 sx={{
-                  borderColor: '#d1d5db',
-                  color: '#4b5563',
-                  '&:hover': {
-                    borderColor: '#9ca3af',
-                    backgroundColor: '#f9fafb'
-                  }
+                  borderColor: "#d1d5db",
+                  color: "#4b5563",
+                  "&:hover": {
+                    borderColor: "#9ca3af",
+                    backgroundColor: "#f9fafb",
+                  },
                 }}
               >
                 Reset
@@ -302,10 +379,10 @@ const Profile = () => {
                 startIcon={<Save />}
                 onClick={handleSave}
                 sx={{
-                  bgcolor: '#1e88e5',
-                  '&:hover': {
-                    bgcolor: '#1976d2'
-                  }
+                  bgcolor: "#1e88e5",
+                  "&:hover": {
+                    bgcolor: "#1976d2",
+                  },
                 }}
               >
                 Save Changes
@@ -314,16 +391,16 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Snackbar 
-          open={showAlert} 
-          autoHideDuration={3000} 
+        <Snackbar
+          open={showAlert}
+          autoHideDuration={3000}
           onClose={handleCloseAlert}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert 
-            onClose={handleCloseAlert} 
-            severity="success" 
-            sx={{ width: '100%' }}
+          <Alert
+            onClose={handleCloseAlert}
+            severity="success"
+            sx={{ width: "100%" }}
             elevation={6}
           >
             Profile updated successfully!
