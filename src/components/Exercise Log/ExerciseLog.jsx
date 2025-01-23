@@ -124,7 +124,7 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
         elevation={0}
         className="tw-p-6 tw-bg-white tw-rounded-xl tw-border tw-border-gray-100"
       >
-        <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-4 tw-gap-4">
+        <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4">
           {/* Exercise Input */}
           <div className="tw-relative">
             <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
