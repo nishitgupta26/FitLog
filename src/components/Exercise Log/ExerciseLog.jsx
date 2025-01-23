@@ -18,7 +18,7 @@ import {
   CircularProgress,
   LinearProgress,
 } from "@mui/material";
-import useExerciseNames from "../../stores/useExerciseNames";
+import useExerciseGuideStore from "../../stores/useExerciseGuideStore";
 import useGoalStore from "../../stores/useGoalStore";
 
 export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
@@ -30,7 +30,7 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const exerciseNames = useExerciseNames((state) => state.exerciseNames);
+  const exerciseNames = useExerciseGuideStore((state) => state.exerciseNames);
   const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
 

@@ -5,52 +5,16 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import SetNewGoal from "./pages/SetNewGoal";
 import ExerciseGuide from "./pages/ExerciseGuide";
-import useExerciseNames from "./stores/useExerciseNames";
+import useExerciseGuideStore from "./stores/useExerciseGuideStore";
 
 function App() {
-  const fetchExerciseNames = useExerciseNames(
-    (state) => state.fetchExerciseNames
-  );
+  const exerciseNames = useExerciseGuideStore((state) => state.exerciseNames);
 
   useEffect(() => {
-    const exerciseNames = [
-      "Push-Ups",
-      "Pull-Ups",
-      "Sit-Ups",
-      "Squats",
-      "Lunges",
-      "Plank",
-      "Burpees",
-      "Mountain Climbers",
-      "Jumping Jacks",
-      "Crunches",
-      "Bicep Curls",
-      "Tricep Dips",
-      "Deadlifts",
-      "Bench Press",
-      "Overhead Press",
-      "Dumbbell Rows",
-      "Leg Press",
-      "Calf Raises",
-      "Chest Fly",
-      "Lat Pulldown",
-      "Seated Row",
-      "Treadmill Running",
-      "Cycling",
-      "Elliptical Training",
-      "Swimming",
-      "Box Jumps",
-      "Russian Twists",
-      "Side Plank",
-      "Jump Rope",
-      "High Knees",
-    ];
-
     if (!localStorage.getItem("exerciseNames")) {
       localStorage.setItem("exerciseNames", JSON.stringify(exerciseNames));
     }
-    fetchExerciseNames();
-  }, [fetchExerciseNames]);
+  }, [exerciseNames]);
 
   return (
     <div className="tw-min-h-screen tw-bg-gradient-to-br tw-from-blue-50 tw-to-indigo-50">
