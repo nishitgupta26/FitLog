@@ -1,16 +1,17 @@
-import React, { useEffect, Suspense } from "react";
+import React, { useEffect, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Loading from "./components/Loading/Loading";
-import Home from "./pages/Home";
-import Profile from "./pages/Profile";
-import SetNewGoal from "./pages/SetNewGoal";
-import ExerciseGuide from "./pages/ExerciseGuide";
 import useExerciseGuideStore from "./stores/useExerciseGuideStore";
 import { useState } from 'react';
 import { ThemeProvider, CssBaseline, Button } from '@mui/material';
 import { lightTheme, darkTheme } from './theme';
 import { getInitialTheme, saveTheme } from './utils/themeStorage';
+
+const Home = lazy(() => import("./pages/Home"));
+const Profile = lazy(() => import("./pages/Profile"));
+const SetNewGoal = lazy(() => import("./pages/SetNewGoal"));
+const ExerciseGuide = lazy(() => import("./pages/ExerciseGuide"));
 
 function App() {
   const exerciseNames = useExerciseGuideStore((state) => state.exerciseNames);
