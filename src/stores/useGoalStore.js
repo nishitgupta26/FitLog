@@ -1,79 +1,98 @@
-import {create} from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 const useGoalStore = create(
   persist(
     (set, get) => {
       // Helper function to filter out invalid goals
       const filterInvalidGoals = (goals) => {
-        return goals.filter(goal => !(goal.progress === 0 && goal.goalValue === 0));
+        return goals.filter(
+          (goal) => !(goal.progress === 0 && goal.goalValue === 0)
+        );
       };
 
       return {
         goals: [],
         // Add new goal or update progress of existing goal
-        addOrUpdateGoal: (newExercise, mode) => set((state) => {
-          const existingGoalIndex = state.goals.findIndex(
-            goal => goal.exercise.toLowerCase() === newExercise.exercise.toLowerCase()
-          );
+        addOrUpdateGoal: (newExercise, mode) =>
+          set((state) => {
+            const existingGoalIndex = state.goals.findIndex(
+              (goal) =>
+                goal.exercise.toLowerCase() ===
+                newExercise.exercise.toLowerCase()
+            );
 
-          let updatedGoals;
+            let updatedGoals;
 
-          if (existingGoalIndex !== -1) {
-            // Update existing goal
-            updatedGoals = [...state.goals];
-            if (mode === 'progress') {
-              // Update progress
-              const existingGoal = updatedGoals[existingGoalIndex];
-              updatedGoals[existingGoalIndex] = {
-                ...existingGoal,
-                progress: newExercise.value,
-                lastUpdated: new Date().toISOString()
-              };
+            if (existingGoalIndex !== -1) {
+              // Update existing goal
+              updatedGoals = [...state.goals];
+              if (mode === "progress") {
+                // Update progress
+                const existingGoal = updatedGoals[existingGoalIndex];
+                updatedGoals[existingGoalIndex] = {
+                  ...existingGoal,
+                  progress: newExercise.value,
+                  lastUpdated: new Date().toISOString(),
+                };
+              } else {
+                // Update goal value
+                updatedGoals[existingGoalIndex] = {
+                  ...updatedGoals[existingGoalIndex],
+                  goalValue: newExercise.value,
+                  type: newExercise.type,
+                  comments: newExercise.comments,
+                  lastUpdated: new Date().toISOString(),
+                };
+              }
             } else {
-              // Update goal value
-              updatedGoals[existingGoalIndex] = {
-                ...updatedGoals[existingGoalIndex],
-                goalValue: newExercise.value,
-                type: newExercise.type,
-                comments: newExercise.comments,
-                lastUpdated: new Date().toISOString()
+              // Add new goal
+              const newGoal = {
+                ...newExercise,
+                id: Date.now(),
+                progress: mode === "progress" ? newExercise.value : 0,
+                goalValue: mode === "progress" ? 0 : newExercise.value,
+                createdAt: new Date().toISOString(),
+                lastUpdated: new Date().toISOString(),
               };
+              updatedGoals = [...state.goals, newGoal];
             }
-          } else {
-            // Add new goal
-            const newGoal = {
-              ...newExercise,
-              id: Date.now(),
-              progress: mode === 'progress' ? newExercise.value : 0,
-              goalValue: mode === 'progress' ? 0 : newExercise.value,
-              createdAt: new Date().toISOString(),
-              lastUpdated: new Date().toISOString()
-            };
-            updatedGoals = [...state.goals, newGoal];
-          }
 
-          // Filter out invalid goals before returning
-          return { goals: filterInvalidGoals(updatedGoals) };
-        }),
+            // Filter out invalid goals before returning
+            return { goals: filterInvalidGoals(updatedGoals) };
+          }),
 
-        deleteGoal: (goalId) => set((state) => ({
-          goals: filterInvalidGoals(state.goals.filter(goal => goal.id !== goalId))
-        })),
+        deleteGoal: (goalId, mode) =>
+          set((state) => {
+            const updatedGoals = state.goals.map((goal) => {
+              if (goal.id === goalId) {
+                if (mode === "progress") {
+                  return { ...goal, progress: 0 };
+                } else {
+                  return { ...goal, goalValue: 0 };
+                }
+              }
+              return goal;
+            });
+            return { goals: filterInvalidGoals(updatedGoals) };
+          }),
 
         clearGoals: () => set({ goals: [] }),
 
-        resetAllGoalValues: () => set((state) => ({
-          goals: filterInvalidGoals(state.goals.map(goal => ({
-            ...goal,
-            goalValue: 0,
-            lastUpdated: new Date().toISOString()
-          })))
-        })),
+        resetAllGoalValues: () =>
+          set((state) => ({
+            goals: filterInvalidGoals(
+              state.goals.map((goal) => ({
+                ...goal,
+                goalValue: 0,
+                lastUpdated: new Date().toISOString(),
+              }))
+            ),
+          })),
       };
     },
     {
-      name: 'fitness-goals',
+      name: "fitness-goals",
       getStorage: () => localStorage,
     }
   )

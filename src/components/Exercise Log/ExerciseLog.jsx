@@ -299,7 +299,7 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
                     </div>
                   </div>
                   <IconButton
-                    onClick={() => deleteGoal(goal.id)}
+                    onClick={() => deleteGoal(goal.id, mode)}
                     className="tw-text-gray-400 hover:tw-text-red-500 tw-transition-colors"
                     size="small"
                   >

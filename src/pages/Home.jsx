@@ -17,7 +17,7 @@ export default function Home() {
   };
 
   const handleDeleteLog = (id) => {
-    deleteGoal(id);
+    deleteGoal(id, "progress");
   };
 
   const validGoals = goals.filter((goal) => goal.goalValue > 0);
