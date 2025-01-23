@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Typography,
   Paper,
@@ -12,7 +12,6 @@ import {
   Card,
   CardContent,
   CardActions,
-  LinearProgress,
   Box,
   Grid,
   Tooltip,
@@ -36,7 +35,7 @@ const DifficultyChip = ({ difficulty }) => {
   return (
     <Chip
       label={difficulty}
-      color={colors[difficulty]}
+      color={colors[difficulty] || "default"}
       size="small"
       className="tw-capitalize"
     />
@@ -94,24 +93,38 @@ export default function ExerciseGuide() {
           >
             Exercise Guide
           </Typography>
-          <Grid container spacing={3} className="tw-mb-6">
-            <Grid item xs={12} sm={6} md={3}>
-              <Card className="tw-bg-blue-50">
-                <CardContent>
-                  <Typography variant="h6">Total Exercises</Typography>
-                  <Typography variant="h4">{exercises.length}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card className="tw-bg-green-50">
-                <CardContent>
-                  <Typography variant="h6">Categories</Typography>
-                  <Typography variant="h4">{categories.length - 1}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+
+          {/* Enhanced Stats Section */}
+          <Card
+            className="tw-mb-6 tw-bg-gradient-to-r tw-from-blue-500 tw-to-blue-600 tw-text-white"
+            sx={{
+              boxShadow:
+                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+              borderRadius: "12px",
+            }}
+          >
+            <CardContent className="tw-flex tw-items-center tw-gap-4 tw-p-6">
+              <div className="tw-bg-white tw-bg-opacity-20 tw-rounded-full tw-p-3">
+                <FitnessCenterIcon sx={{ fontSize: 32, color: "white" }} />
+              </div>
+              <div>
+                <Typography
+                  variant="h6"
+                  className="tw-text-blue-100 tw-font-medium"
+                >
+                  Available Exercises
+                </Typography>
+                <Typography variant="h3" className="tw-font-bold">
+                  {filteredExercises.length}
+                </Typography>
+                {selectedCategory !== "all" && (
+                  <Typography variant="subtitle2" className="tw-text-blue-100">
+                    Filtered by: {selectedCategory}
+                  </Typography>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Search and Filter */}
           <div className="tw-flex tw-flex-col sm:tw-flex-row tw-gap-4 tw-mb-6">
@@ -162,7 +175,7 @@ export default function ExerciseGuide() {
             </Box>
           </div>
         </Box>
-
+        
         {/* Exercise Grid */}
         <Grid container spacing={3}>
           {filteredExercises.map((exercise) => (
@@ -223,7 +236,7 @@ export default function ExerciseGuide() {
             </Grid>
           ))}
         </Grid>
-
+        
         {/* Exercise Detail Dialog */}
         <Dialog
           open={openDialog}
