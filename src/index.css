@@ -3,3 +3,16 @@
 @import "tailwindcss/components";
 
 @import "tailwindcss/utilities";
+
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--background-color, #ffffff); /* Fallback color */
+    color: var(--text-color, #000000); /* Fallback text color */
+  }
+  
+  
+  
+  
