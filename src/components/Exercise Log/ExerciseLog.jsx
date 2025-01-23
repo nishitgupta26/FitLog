@@ -17,6 +17,7 @@ import {
   Alert,
   CircularProgress,
   LinearProgress,
+  Card,
 } from "@mui/material";
 import useExerciseGuideStore from "../../stores/useExerciseGuideStore";
 import useGoalStore from "../../stores/useGoalStore";
@@ -90,13 +91,24 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
         return <DirectionsRunIcon className="tw-w-5 tw-h-5" />;
     }
   };
-  const getTimeAgo = (timestamp) => {
-    const minutes = Math.floor((Date.now() - new Date(timestamp)) / 60000);
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.floor(hours / 24)}d ago`;
+  const formatTimeAgo = (timestamp) => {
+
+    const now = new Date();
+  
+    const past = new Date(timestamp);
+  
+    const diffSeconds = Math.floor((now - past) / 1000);
+  
+    
+  
+    if (diffSeconds < 60) return 'Just now';
+  
+    if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)} mins ago`;
+  
+    if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)} hours ago`;
+  
+    return `${Math.floor(diffSeconds / 86400)} days ago`;
+  
   };
 
   const handleSuggestionClick = (name) => {
@@ -250,129 +262,127 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
       </Paper>
 
       {/* Exercise List */}
-      <div className="tw-space-y-4">
-        {goals?.length > 0 ? (
-          goals.map((goal) => (
-            <Fade in={true} key={goal.id}>
-              <Paper
-                elevation={0}
-                className="tw-p-4 tw-rounded-xl tw-border tw-border-gray-100 hover:tw-border-blue-100 tw-transition-all"
-              >
-                <div className="tw-flex tw-justify-between tw-items-start tw-mb-3" />
-                <div className="tw-flex tw-items-start tw-space-x-4">
-                  <div className="tw-bg-blue-100 tw-p-2 tw-rounded-lg tw-text-blue-500">
-                    {getTypeIcon(goal.reps?.split(" ")[1] || "")}
-                    <div className="tw-bg-blue-50 tw-p-2 tw-rounded-lg tw-text-blue-500">
-                      {getTypeIcon(goal.type)}
-                    </div>
-                    <div>
-                      <div className="tw-flex tw-items-center tw-space-x-2">
-                        <Typography
-                          variant="subtitle1"
-                          className="tw-font-medium"
-                        >
-                          {goal.exercise}
-                        </Typography>
-                        <Chip
-                          label={`${goal.progress} / ${goal.goalValue} ${goal.type}`}
-                          size="small"
-                          className="tw-bg-blue-50 tw-text-blue-600"
-                        />
-                      </div>
-                      {goal.comments && (
-                        <Typography
-                          variant="body2"
-                          className="tw-text-gray-500 tw-mt-1"
-                        >
-                          {goal.comments}
-                        </Typography>
-                      )}
-                      {goal.lastUpdated && mode === "progress" && (
-                        <Typography
-                          variant="caption"
-                          className="tw-text-gray-400"
-                        >
-                          Last updated:{" "}
-                          {new Date(goal.lastUpdated).toLocaleString()}
-                        </Typography>
-                      )}
-                    </div>
-                  </div>
-                  <IconButton
-                    onClick={() => deleteGoal(goal.id, mode)}
-                    className="tw-text-gray-400 hover:tw-text-red-500 tw-transition-colors"
-                    size="small"
+<div className="tw-space-y-4 tw-rounded-xl tw-mx-auto">
+  {goals?.length > 0 ? (
+    goals.map((goal) => (
+      <Fade in={true} key={goal.id}>
+        <Card 
+          variant="outlined"
+          className="tw-p-4 tw-rounded-2xl tw-transition-all tw-border-gray-200 hover:tw-shadow-md hover:tw-border-blue-200"
+        >
+          <div className="tw-flex tw-items-center tw-space-x-4">
+            <div className="tw-bg-blue-50 tw-p-3 tw-rounded-xl tw-flex tw-items-center tw-justify-center">
+              {getTypeIcon(goal.type, "tw-w-8 tw-h-8 tw-text-blue-600")}
+            </div>
+            
+            <div className="tw-flex-grow">
+              <div className="tw-flex tw-justify-between tw-items-start">
+                <div>
+                  <Typography 
+                    variant="h6" 
+                    className="tw-font-semibold tw-text-gray-800 tw-mb-1"
                   >
-                    <DeleteIcon className="tw-w-5 tw-h-5" />
-                  </IconButton>
-                </div>
-
-                {/* Progress Bar */}
-                {goal.goalValue > 0 && (
-                  <div className="tw-mt-4">
-                    <div className="tw-flex tw-justify-between tw-items-center tw-mb-1">
-                      <Typography
-                        variant="caption"
-                        className="tw-text-gray-600"
-                      >
-                        Progress
-                      </Typography>
-                      <div className="tw-flex tw-items-center tw-space-x-2">
-                        <Typography
-                          variant="caption"
-                          className="tw-text-gray-600"
-                        >
-                          {((goal.progress / goal.goalValue) * 100).toFixed(1)}%
-                        </Typography>
-                        {goal.progress >= goal.goalValue && (
-                          <EmojiEventsIcon className="tw-w-4 tw-h-4 tw-text-yellow-500" />
-                        )}
-                      </div>
-                    </div>
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.min(
-                        (goal.progress / goal.goalValue) * 100,
-                        100
-                      )}
-                      color={
-                        goal.progress >= goal.goalValue ? "success" : "primary"
-                      }
-                      className="tw-rounded-full"
-                      sx={{
-                        height: 8,
-                        backgroundColor: "#f3f4f6",
-                      }}
+                    {goal.exercise}
+                  </Typography>
+                  <div className="tw-flex tw-items-center tw-space-x-2">
+                    <Chip
+                      label={`${goal.progress || 0} / ${goal.goalValue} ${goal.type}`}
+                      size="small"
+                      color="primary"
+                      variant="soft"
+                      className="tw-mb-1"
                     />
                     {goal.progress >= goal.goalValue && (
-                      <Typography
-                        variant="caption"
-                        className="tw-text-green-600 tw-mt-2 tw-block"
-                      >
-                        🎉 Goal achieved!
-                      </Typography>
+                      <EmojiEventsIcon className="tw-text-yellow-500" />
                     )}
                   </div>
-                )}
-              </Paper>
-            </Fade>
-          ))
-        ) : (
-          <div className="tw-text-center tw-py-12">
-            <FitnessCenterIcon className="tw-w-16 tw-h-16 tw-text-gray-200 tw-mb-4" />
-            <Typography variant="h6" className="tw-text-gray-400 tw-mb-2">
-              {mode === "progress"
-                ? "No exercises logged yet"
-                : "No goals set yet"}
-            </Typography>
-            <Typography variant="body2" className="tw-text-gray-400">
-              {mode === "progress"
-                ? "Start tracking your workout progress by logging exercises above"
-                : "Start setting your fitness goals by adding exercises above"}
-            </Typography>
+                </div>
+                <IconButton 
+                  onClick={() => deleteGoal(goal.id, mode)}
+                  color="error"
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+
+              {goal.comments && (
+                <Typography
+                  variant="body2"
+                  className="tw-text-gray-600 tw-italic tw-mt-1"
+                >
+                  "{goal.comments}"
+                </Typography>
+              )}
+              
+              {goal.lastUpdated && mode === "progress" && (
+                <Typography
+                  variant="caption"
+                  className="tw-text-gray-400 tw-block tw-mt-1"
+                >
+                  Last updated: {(formatTimeAgo(goal.lastUpdated))}
+                </Typography>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+
+          {goal.goalValue > 0 && (
+  <div className="tw-mt-4">
+    <div className="tw-flex tw-justify-between tw-items-center tw-mb-2">
+      <Typography variant="body2" className="tw-text-gray-600">
+        Progress
+      </Typography>
+      <Typography 
+        variant="body2" 
+        className={`tw-font-semibold ${
+          (goal.progress || 0) >= goal.goalValue 
+          ? 'tw-text-green-600' 
+          : 'tw-text-blue-600'
+        }`}
+      >
+        {(((goal.progress || 0) / goal.goalValue) * 100).toFixed(1)}%
+      </Typography>
+    </div>
+    <div className="tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-3 tw-overflow-hidden">
+      <div 
+        className={`tw-h-full ${
+          (goal.progress || 0) >= goal.goalValue 
+          ? 'tw-bg-green-500' 
+          : 'tw-bg-blue-500'
+        }`} 
+        style={{
+          width: `${Math.min(((goal.progress || 0) / goal.goalValue) * 100, 100)}%`,
+          transition: 'width 0.5s ease-in-out'
+        }}
+      />
+    </div>
+    {(goal.progress || 0) >= goal.goalValue && (
+      <Typography
+        variant="caption"
+        className="tw-text-green-600 tw-mt-2 tw-block tw-text-center"
+      >
+        🎉 Goal Achieved! Congratulations! 🏆
+      </Typography>
+    )}
+  </div>
+)}
+        </Card>
+      </Fade>
+    ))
+  ) : (
+    <div className="tw-text-center tw-py-16 tw-bg-gray-50 tw-rounded-2xl tw-border tw-border-dashed tw-border-gray-200">
+      <FitnessCenterIcon className="tw-w-20 tw-h-20 tw-text-gray-300 tw-mb-6 tw-mx-auto" />
+      <Typography variant="h5" className="tw-text-gray-600 tw-mb-3">
+        {mode === "progress" ? "No Exercises Logged" : "No Goals Set"}
+      </Typography>
+      <Typography variant="body1" className="tw-text-gray-500">
+        {mode === "progress"
+          ? "Start tracking your workout progress by logging exercises"
+          : "Begin setting your fitness goals by adding exercises"}
+      </Typography>
+    </div>
+  )}
+</div>
     </div>
   );
 }
