@@ -12,6 +12,8 @@ import {
   GitHub,
   LocationOn,
   FitnessCenter,
+  Height,
+  MonitorWeight,
 } from "@mui/icons-material";
 import {
   Card,
@@ -38,6 +40,8 @@ const Profile = () => {
     aboutMe: "",
     location: "",
     fitnessGoal: "",
+    height: "",
+    weight: "",
   });
 
   const [showAlert, setShowAlert] = useState(false);
@@ -70,6 +74,8 @@ const Profile = () => {
       phone: "",
       location: "",
       aboutMe: "",
+      height: "",
+      weight: "",
     };
 
     setProfileData(updatedData); // Update state
@@ -165,7 +171,7 @@ const Profile = () => {
                 </Typography>
 
                 <Box sx={{ display: "grid", gap: 3 }}>
-                  {/* Name Fields */}
+                  {/* Name and Measurement Fields */}
                   <Box
                     sx={{
                       display: "grid",
@@ -194,6 +200,34 @@ const Profile = () => {
                       InputProps={{
                         startAdornment: (
                           <Person sx={{ color: "text.secondary", mr: 1 }} />
+                        ),
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Height (cm)"
+                      name="height"
+                      type="number"
+                      value={profileData.height}
+                      onChange={handleInputChange}
+                      InputProps={{
+                        startAdornment: (
+                          <Height sx={{ color: "text.secondary", mr: 1 }} />
+                        ),
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Weight (kg)"
+                      name="weight"
+                      type="number"
+                      value={profileData.weight}
+                      onChange={handleInputChange}
+                      InputProps={{
+                        startAdornment: (
+                          <MonitorWeight
+                            sx={{ color: "text.secondary", mr: 1 }}
+                          />
                         ),
                       }}
                     />
