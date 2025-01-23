@@ -32,14 +32,6 @@ function App() {
   return (
     
     <div className="tw-min-h-screen tw-bg-gradient-to-br tw-from-blue-50 tw-to-indigo-50">
-      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <CssBaseline />
-     
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-          <Button variant="contained" onClick={toggleTheme}>
-            {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          </Button>
-          </div>
       <Navbar />
       <div className="tw-container tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-6">
         <Suspense fallback={<Loading />}>
@@ -52,8 +44,6 @@ function App() {
           </Routes>
         </Suspense>
       </div>
-      
-    </ThemeProvider>
     </div>
     
   );

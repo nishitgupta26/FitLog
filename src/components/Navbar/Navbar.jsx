@@ -13,12 +13,17 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
+import { AppBar, Toolbar, Box } from '@mui/material';
+import { useContext } from 'react';
+import { ThemeContext } from '../../context/themeContext';
+import Brightness4Icon from '@mui/icons-material/Brightness4'; // Dark mode icon
+import Brightness7Icon from '@mui/icons-material/Brightness7'; // Light mode icon
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMenuAnchor, setMobileMenuAnchor] = React.useState(null);
   const navigate = useNavigate();
-
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -181,6 +186,15 @@ export default function Navbar() {
             </MenuItem>
           </Menu>
         </div>
+        <div className="tw-hidden md:tw-flex">
+        <IconButton
+            color="inherit"
+            onClick={toggleTheme}
+            sx={{ display: { xs: 'none', md: 'flex' }, marginLeft: 2 }}
+          >
+            {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+          </div>
       </div>
     </nav>
   );
