@@ -24,9 +24,11 @@ import useGoalStore from "../../stores/useGoalStore";
 
 export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
   const [exercise, setExercise] = useState("");
-  const [reps, setReps] = useState("");
+  const [reps, setReps] = useState(""); //taking input for reps&sets / mins / kms
+  const [sets, setSets] = useState(""); //taking input for sets
   const [type, setType] = useState("reps");
   const [comments, setComments] = useState("");
+
   const [filteredExerciseNames, setFilteredExerciseNames] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -57,27 +59,25 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
   }, [exercise, exerciseNames, goals, mode]);
 
   const handleAdd = async () => {
-    if (exercise && reps) {
-      setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
+    if (exercise) {
       const newExercise = {
         exercise,
-        value: parseInt(reps, 10),
+        value:
+          type === "reps"
+            ? parseInt(reps, 10) * parseInt(sets, 10)
+            : parseInt(reps, 10),
         type,
         comments,
       };
 
       addOrUpdateGoal(newExercise, mode);
 
+      // Reset fields
       setExercise("");
       setReps("");
+      setSets("");
       setComments("");
       setType("reps");
-      setIsLoading(false);
-      setShowSuccess(true);
-
-      setTimeout(() => setShowSuccess(false), 3000);
     }
   };
 
@@ -166,22 +166,6 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
 
           {/* Count & Type Input */}
           <div className="tw-flex tw-space-x-2">
-            <div className="tw-flex-1">
-              <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
-                <Typography variant="caption" className="tw-text-gray-600">
-                  {mode === "progress" ? "Count" : "Goal"}
-                </Typography>
-              </div>
-              <input
-                type="number"
-                placeholder={
-                  mode === "progress" ? "Enter amount" : "Set goal value"
-                }
-                value={reps}
-                onChange={(e) => setReps(e.target.value)}
-                className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-all"
-              />
-            </div>
             <FormControl className="tw-w-32">
               <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
                 <Typography variant="caption" className="tw-text-gray-600">
@@ -190,7 +174,12 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
               </div>
               <Select
                 value={type}
-                onChange={(e) => setType(e.target.value)}
+                onChange={(e) => {
+                  setType(e.target.value);
+                  // Reset fields when type changes
+                  setReps("");
+                  setSets("");
+                }}
                 className="tw-text-sm"
                 sx={{
                   height: "42px",
@@ -219,6 +208,73 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
                 </MenuItem>
               </Select>
             </FormControl>
+
+            {/* <div className="tw-flex-1">
+              <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
+                <Typography variant="caption" className="tw-text-gray-600">
+                  {type === "mins" ? "Minutes" : "Kilometers"}
+                </Typography>
+              </div>
+              <input
+                type="number"
+                placeholder={`Enter ${
+                  type === "mins" ? "minutes" : "kilometers"
+                }`}
+                value={reps}
+                onChange={(e) => setReps(e.target.value)}
+                className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-all"
+              />
+            </div> */}
+
+            {type === "reps" ? (
+              <>
+                <div className="tw-flex-1">
+                  <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
+                    <Typography variant="caption" className="tw-text-gray-600">
+                      Reps
+                    </Typography>
+                  </div>
+                  <input
+                    type="number"
+                    placeholder="Enter reps"
+                    value={reps}
+                    onChange={(e) => setReps(e.target.value)}
+                    className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm"
+                  />
+                </div>
+                <div className="tw-flex-1">
+                  <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
+                    <Typography variant="caption" className="tw-text-gray-600">
+                      Sets
+                    </Typography>
+                  </div>
+                  <input
+                    type="number"
+                    placeholder="Enter sets"
+                    value={sets}
+                    onChange={(e) => setSets(e.target.value)}
+                    className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm"
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="tw-flex-1">
+                <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
+                  <Typography variant="caption" className="tw-text-gray-600">
+                    {type === "mins" ? "Minutes" : "Kilometers"}
+                  </Typography>
+                </div>
+                <input
+                  type="number"
+                  placeholder={`Enter ${
+                    type === "mins" ? "minutes" : "kilometers"
+                  }`}
+                  value={reps}
+                  onChange={(e) => setReps(e.target.value)}
+                  className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm"
+                />
+              </div>
+            )}
           </div>
 
           {/* Comments Input */}
