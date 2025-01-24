@@ -24,6 +24,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import useExerciseGuideStore from "../stores/useExerciseGuideStore";
 import { exerciseIcons } from "../dataFiles/exerciseIcons";
+import ExerciseDetailDialog from "../components/ExerciseDetailDialog/ExerciseDetailDialog";
 
 const DifficultyChip = ({ difficulty }) => {
   const colors = {
@@ -175,7 +176,7 @@ export default function ExerciseGuide() {
             </Box>
           </div>
         </Box>
-        
+
         {/* Exercise Grid */}
         <Grid container spacing={3}>
           {filteredExercises.map((exercise) => (
@@ -236,129 +237,14 @@ export default function ExerciseGuide() {
             </Grid>
           ))}
         </Grid>
-        
+
         {/* Exercise Detail Dialog */}
-        <Dialog
+        <ExerciseDetailDialog
           open={openDialog}
           onClose={() => setOpenDialog(false)}
-          maxWidth="md"
-          fullWidth
-        >
-          {selectedExercise && (
-            <>
-              <Box className="tw-flex tw-justify-between tw-items-center tw-p-4 tw-border-b">
-                <div className="tw-flex tw-items-center tw-gap-3">
-                  <div className="tw-bg-blue-50 tw-p-2 tw-rounded-lg">
-                    {renderSvgIcon(selectedExercise.category)}
-                  </div>
-                  <div>
-                    <Typography variant="h6" className="tw-font-semibold">
-                      {selectedExercise.name}
-                    </Typography>
-                    <DifficultyChip difficulty={selectedExercise.difficulty} />
-                  </div>
-                </div>
-                <IconButton onClick={() => setOpenDialog(false)}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-              <DialogContent>
-                <div className="tw-space-y-6">
-                  {/* Main Muscles */}
-                  <section>
-                    <Typography
-                      variant="subtitle1"
-                      className="tw-font-semibold tw-mb-2"
-                    >
-                      Target Muscles
-                    </Typography>
-                    <div className="tw-flex tw-flex-wrap tw-gap-2">
-                      {selectedExercise.mainMuscles.map((muscle, index) => (
-                        <Chip
-                          key={index}
-                          label={muscle}
-                          color="primary"
-                          variant="outlined"
-                          size="small"
-                        />
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Benefits */}
-                  <section>
-                    <Typography
-                      variant="subtitle1"
-                      className="tw-font-semibold tw-mb-2"
-                    >
-                      Benefits
-                    </Typography>
-                    <ul className="tw-list-disc tw-list-inside tw-space-y-1">
-                      {selectedExercise.benefits.map((benefit, index) => (
-                        <li key={index} className="tw-text-gray-600">
-                          {benefit}
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-
-                  {/* Steps */}
-                  <section>
-                    <Typography
-                      variant="subtitle1"
-                      className="tw-font-semibold tw-mb-2"
-                    >
-                      Steps
-                    </Typography>
-                    <div className="tw-space-y-4">
-                      {selectedExercise.steps.map((step, index) => (
-                        <div key={index} className="tw-flex tw-gap-4">
-                          <div className="tw-bg-blue-100 tw-rounded-full tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold tw-shrink-0">
-                            {index + 1}
-                          </div>
-                          <Typography className="tw-text-gray-600">
-                            {step}
-                          </Typography>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Tips */}
-                  <section>
-                    <Typography
-                      variant="subtitle1"
-                      className="tw-font-semibold tw-mb-2"
-                    >
-                      Tips
-                    </Typography>
-                    <ul className="tw-list-disc tw-list-inside tw-space-y-1">
-                      {selectedExercise.tips.map((tip, index) => (
-                        <li key={index} className="tw-text-gray-600">
-                          {tip}
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-
-                  {/* Video Tutorial Button */}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<PlayCircleOutlineIcon />}
-                    fullWidth
-                    onClick={() =>
-                      window.open(selectedExercise.videoUrl, "_blank")
-                    }
-                    className="tw-mt-4"
-                  >
-                    Watch Tutorial Video
-                  </Button>
-                </div>
-              </DialogContent>
-            </>
-          )}
-        </Dialog>
+          selectedExercise={selectedExercise}
+          exerciseIcons={exerciseIcons}
+        />
       </Paper>
     </div>
   );
