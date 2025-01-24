@@ -21,6 +21,8 @@ import {
 } from "@mui/material";
 import useExerciseGuideStore from "../../stores/useExerciseGuideStore";
 import useGoalStore from "../../stores/useGoalStore";
+import { exerciseIcons } from "../../dataFiles/exerciseIcons";
+import ExerciseDetailDialog from "../ExerciseDetailDialog/ExerciseDetailDialog";
 
 export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
   const [exercise, setExercise] = useState("");
@@ -33,6 +35,11 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // States for exercise detail dialog
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const exercises = useExerciseGuideStore((state) => state.exercises);
   const exerciseNames = useExerciseGuideStore((state) => state.exerciseNames);
   const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
@@ -111,6 +118,17 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
   const handleSuggestionClick = (name) => {
     setExercise(name);
     setFilteredExerciseNames([]);
+  };
+
+  const handleExerciseDetailClick = (exerciseName) => {
+    const exerciseDetails = exercises.find(
+      (ex) => ex.name.toLowerCase() === exerciseName.toLowerCase()
+    );
+
+    if (exerciseDetails) {
+      setSelectedExercise(exerciseDetails);
+      setOpenDialog(true);
+    }
   };
 
   return (
@@ -208,24 +226,6 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
                 </MenuItem>
               </Select>
             </FormControl>
-
-            {/* <div className="tw-flex-1">
-              <div className="tw-flex tw-items-center tw-space-x-2 tw-mb-1">
-                <Typography variant="caption" className="tw-text-gray-600">
-                  {type === "mins" ? "Minutes" : "Kilometers"}
-                </Typography>
-              </div>
-              <input
-                type="number"
-                placeholder={`Enter ${
-                  type === "mins" ? "minutes" : "kilometers"
-                }`}
-                value={reps}
-                onChange={(e) => setReps(e.target.value)}
-                className="tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-all"
-              />
-            </div> */}
-
             {type === "reps" ? (
               <>
                 <div className="tw-flex-1">
@@ -325,7 +325,8 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
             <Fade in={true} key={goal.id}>
               <Card
                 variant="outlined"
-                className="tw-p-4 tw-rounded-2xl tw-transition-all tw-border-gray-200 hover:tw-shadow-md hover:tw-border-blue-200"
+                onClick={() => handleExerciseDetailClick(goal.exercise)}
+                className="tw-p-4 tw-rounded-2xl tw-transition-all tw-border-gray-200 hover:tw-shadow-md hover:tw-border-blue-200 tw-cursor-pointer"
               >
                 <div className="tw-flex tw-items-center tw-space-x-4">
                   <div className="tw-bg-blue-50 tw-p-3 tw-rounded-xl tw-flex tw-items-center tw-justify-center">
@@ -337,7 +338,10 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
                       <div>
                         <Typography
                           variant="h6"
-                          className="tw-font-semibold tw-text-gray-800 tw-mb-1"
+                          className="tw-font-semibold tw-text-gray-800 tw-mb-1 tw-cursor-pointer hover:tw-text-blue-600"
+                          onClick={() =>
+                            handleExerciseDetailClick(goal.exercise)
+                          }
                         >
                           {goal.exercise}
                         </Typography>
@@ -449,6 +453,13 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
           </div>
         )}
       </div>
+      {/* Exercise Detail Dialog */}
+      <ExerciseDetailDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        selectedExercise={selectedExercise}
+        exerciseIcons={exerciseIcons} // Ensure this is imported or passed
+      />
     </div>
   );
 }
