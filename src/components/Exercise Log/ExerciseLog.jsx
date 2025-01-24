@@ -361,7 +361,10 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
                         </div>
                       </div>
                       <IconButton
-                        onClick={() => deleteGoal(goal.id, mode)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteGoal(goal.id, mode);
+                        }}
                         color="error"
                         size="small"
                       >
