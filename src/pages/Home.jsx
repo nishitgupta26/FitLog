@@ -36,7 +36,7 @@ export default function Home() {
       {/* Welcome Section */}
       <Paper
         elevation={0}
-        className="tw-bg-gradient-to-r tw-from-blue-600 tw-to-indigo-600 tw-rounded-2xl tw-overflow-hidden"
+        className="tw-bg-white tw-bg-gradient-to-r tw-from-blue-600 tw-to-indigo-600 tw-rounded-2xl tw-overflow-hidden"
       >
         <div className="tw-px-6 tw-py-8 sm:tw-px-8 sm:tw-py-10 tw-flex tw-flex-col sm:tw-flex-row tw-items-center tw-justify-between">
           <div className="tw-text-white tw-space-y-2 tw-text-center sm:tw-text-left">

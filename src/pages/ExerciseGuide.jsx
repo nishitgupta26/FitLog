@@ -84,7 +84,7 @@ export default function ExerciseGuide() {
     <div className="tw-min-h-screen">
       <Paper
         elevation={0}
-        className="tw-max-w-full tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-4 sm:tw-py-6 lg:tw-py-8"
+        className="tw-bg-white tw-max-w-full tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-4 sm:tw-py-6 lg:tw-py-8"
       >
         {/* Enhanced Header with Stats */}
         <Box className="tw-mb-8">

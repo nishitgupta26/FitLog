@@ -37,7 +37,7 @@ export default function SetNewGoal() {
     <div className="tw-min-h-screen">
       <Paper
         elevation={0}
-        className="tw-max-w-full tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-4 sm:tw-py-6 lg:tw-py-8"
+        className=" tw-bg-white tw-max-w-full tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-4 sm:tw-py-6 lg:tw-py-8"
       >
         <div className="tw-space-y-6 sm:tw-space-y-8 lg:tw-space-y-12">
           {/* Header Section */}
