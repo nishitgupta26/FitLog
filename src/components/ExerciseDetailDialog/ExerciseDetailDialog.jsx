@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import YouTubeVideo from "./YouTubeVideo";
 
 const DifficultyChip = ({ difficulty }) => {
   const colors = {
@@ -142,16 +143,19 @@ const ExerciseDetailDialog = ({
           </section>
 
           {/* Video Tutorial Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<PlayCircleOutlineIcon />}
-            fullWidth
-            onClick={() => window.open(selectedExercise.videoUrl, "_blank")}
-            className="tw-mt-4"
-          >
-            Watch Tutorial Video
-          </Button>
+          <section>
+            {/* <Typography
+              variant="subtitle1"
+              className="tw-font-semibold tw-mb-4"
+            >
+              {`${selectedExercise.name}`} Tutorial Video
+            </Typography> */}
+            <YouTubeVideo
+              videoUrl={selectedExercise.videoUrl}
+              title={`${selectedExercise.name} Tutorial`}
+              autoplay={0} // Optional: Start video automatically
+            />
+          </section>
         </div>
       </DialogContent>
     </Dialog>
