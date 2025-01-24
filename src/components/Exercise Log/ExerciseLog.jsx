@@ -293,9 +293,13 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
               />
               <button
                 onClick={handleAdd}
-                disabled={isLoading || !exercise || !reps}
+                disabled={
+                  isLoading ||
+                  !exercise ||
+                  (type === "reps" ? !reps || !sets : !reps)
+                }
                 className={`tw-px-6 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-space-x-2 tw-transition-all ${
-                  isLoading || !exercise || !reps
+                  isLoading || (type === "reps" ? !reps || !sets : !reps)
                     ? "tw-bg-gray-100 tw-text-gray-400 tw-cursor-not-allowed"
                     : "tw-bg-blue-500 tw-text-white hover:tw-bg-blue-600"
                 }`}
