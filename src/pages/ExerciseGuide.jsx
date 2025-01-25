@@ -86,7 +86,7 @@ export default function ExerciseGuide() {
         elevation={0}
         className="tw-bg-white tw-max-w-full tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-4 sm:tw-py-6 lg:tw-py-8"
       >
-        {/* Enhanced Header with Stats */}
+        {/* Header */}
         <Box className="tw-mb-8">
           <Typography
             variant="h3"
@@ -95,7 +95,7 @@ export default function ExerciseGuide() {
             Exercise Guide
           </Typography>
 
-          {/* Enhanced Stats Section */}
+          {/*Stats Section */}
           <Card
             className="tw-mb-6 tw-bg-gradient-to-r tw-from-blue-500 tw-to-blue-600 tw-text-white"
             sx={{

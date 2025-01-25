@@ -461,7 +461,7 @@ export default function ExerciseLog({ goals, mode }) {
         open={openDialog}
         onClose={() => setOpenDialog(false)}
         selectedExercise={selectedExercise}
-        exerciseIcons={exerciseIcons} // Ensure this is imported or passed
+        exerciseIcons={exerciseIcons}
       />
     </div>
   );

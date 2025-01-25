@@ -22,7 +22,6 @@ const YTIFrame = ({ embedId, title, autoplay = 0 }) => {
 // Wrapper component for displaying a YouTube video with header and external link button
 
 const YouTubeVideo = ({ videoUrl, title, autoplay = 0 }) => {
-  // Extract the YouTube video ID from a URL
   const getYouTubeId = (url) => {
     const regExp =
       /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -33,7 +32,7 @@ const YouTubeVideo = ({ videoUrl, title, autoplay = 0 }) => {
   const videoId = getYouTubeId(videoUrl);
 
   if (!videoId) {
-    console.error("Invalid YouTube URL provided.");
+    console.error("Invalid YouTube URL");
     return null;
   }
 

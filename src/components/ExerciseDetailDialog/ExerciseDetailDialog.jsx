@@ -9,7 +9,6 @@ import {
   Chip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import YouTubeVideo from "./YouTubeVideo";
 
 const DifficultyChip = ({ difficulty }) => {
@@ -153,7 +152,7 @@ const ExerciseDetailDialog = ({
             <YouTubeVideo
               videoUrl={selectedExercise.videoUrl}
               title={`${selectedExercise.name} Tutorial`}
-              autoplay={0} // Optional: Start video automatically
+              autoplay={0} // Optional
             />
           </section>
         </div>

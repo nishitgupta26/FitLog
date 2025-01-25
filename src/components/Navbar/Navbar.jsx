@@ -8,16 +8,14 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import FitbitOutlinedIcon from "@mui/icons-material/FitbitOutlined";
 import FlagIcon from "@mui/icons-material/Flag";
-import EditIcon from "@mui/icons-material/Edit";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
-import { AppBar, Toolbar, Box } from '@mui/material';
-import { useContext } from 'react';
-import { ThemeContext } from '../../context/themeContext';
-import Brightness4Icon from '@mui/icons-material/Brightness4'; // Dark mode icon
-import Brightness7Icon from '@mui/icons-material/Brightness7'; // Light mode icon
+import { useContext } from "react";
+import { ThemeContext } from "../../context/themeContext";
+import Brightness4Icon from "@mui/icons-material/Brightness4"; // Dark mode icon
+import Brightness7Icon from "@mui/icons-material/Brightness7"; // Light mode icon
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -43,7 +41,6 @@ export default function Navbar() {
   const handleNavigate = (path) => {
     if (path === "logout") {
       localStorage.removeItem("profileData");
-      // Enhanced logout feedback
       const feedback = document.createElement("div");
       feedback.className =
         "tw-fixed tw-bottom-4 tw-right-4 tw-bg-blue-500 tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-shadow-lg";
@@ -60,7 +57,6 @@ export default function Navbar() {
   const navItems = [
     { label: "Guide", icon: <MenuBookIcon />, path: "/guide" },
     { label: "Goals", icon: <FlagIcon />, path: "/set-goal" },
-    // { label: "Update Goal", icon: <EditIcon />, path: "/update-goal" },
   ];
 
   return (
@@ -187,14 +183,14 @@ export default function Navbar() {
           </Menu>
         </div>
         <div className="tw-hidden md:tw-flex">
-        <IconButton
+          <IconButton
             color="inherit"
             onClick={toggleTheme}
-            sx={{ display: { xs: 'none', md: 'flex' }, marginLeft: 2 }}
+            sx={{ display: { xs: "none", md: "flex" }, marginLeft: 2 }}
           >
             {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
-          </div>
+        </div>
       </div>
     </nav>
   );

@@ -79,7 +79,7 @@ const Profile = () => {
     };
 
     setProfileData(updatedData); // Update state
-    localStorage.setItem("profileData", JSON.stringify(updatedData)); // Save to localStorage
+    localStorage.setItem("profileData", JSON.stringify(updatedData));
     setShowAlert(true); // Optional: Show alert if needed
   };
 

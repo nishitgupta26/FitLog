@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 const useGoalStore = create(
   persist(
     (set, get) => {
-      // Helper function to filter out invalid goals
+      // function to filter out invalid goals
       const filterInvalidGoals = (goals) => {
         return goals.filter(
           (goal) => !(goal.progress === 0 && goal.goalValue === 0)
