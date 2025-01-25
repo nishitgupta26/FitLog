@@ -101,12 +101,7 @@ export default function SetNewGoal() {
             </div>
 
             <div className="tw-p-6 sm:tw-p-8">
-              <ExerciseLog
-                goals={goals}
-                onAddGoal={addOrUpdateGoal}
-                onDeleteGoal={deleteGoal}
-                mode="goal"
-              />
+              <ExerciseLog goals={goals} mode="goal" />
             </div>
           </div>
         </div>

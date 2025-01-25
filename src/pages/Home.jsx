@@ -12,14 +12,6 @@ export default function Home() {
   const updateGoalProgress = useGoalStore((state) => state.updateGoalProgress);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
 
-  const handleAddLog = (log) => {
-    updateGoalProgress(log.id, log.value);
-  };
-
-  const handleDeleteLog = (id) => {
-    deleteGoal(id, "progress");
-  };
-
   const validGoals = goals.filter((goal) => goal.goalValue > 0);
   const totalProgress = validGoals.reduce((acc, goal) => {
     const progressToAdd =
@@ -83,12 +75,7 @@ export default function Home() {
           <Typography variant="h6" className="tw-font-semibold tw-mb-4">
             Today's Progress
           </Typography>
-          <ExerciseLog
-            goals={goals}
-            onAddLog={handleAddLog}
-            onDeleteLog={handleDeleteLog}
-            mode="progress"
-          />
+          <ExerciseLog goals={goals} mode="progress" />
         </div>
       </Paper>
     </div>

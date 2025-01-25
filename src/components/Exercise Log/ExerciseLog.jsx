@@ -24,7 +24,7 @@ import useGoalStore from "../../stores/useGoalStore";
 import { exerciseIcons } from "../../dataFiles/exerciseIcons";
 import ExerciseDetailDialog from "../ExerciseDetailDialog/ExerciseDetailDialog";
 
-export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
+export default function ExerciseLog({ goals, mode }) {
   const [exercise, setExercise] = useState("");
   const [reps, setReps] = useState(""); //taking input for reps&sets / mins / kms
   const [sets, setSets] = useState(""); //taking input for sets
