@@ -284,12 +284,12 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
                 Comments (optional)
               </Typography>
             </div>
-            <div className="tw-flex tw-space-x-2">
+            <div className="lg:tw-col-span-2 tw-flex tw-flex-col tw-items-end sm:tw-flex-row tw-space-y-2 sm:tw-space-y-0 sm:tw-space-x-2">
               <input
                 placeholder="Add notes about your exercise..."
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
-                className="tw-flex-1 tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-all"
+                className="tw-w-full tw-h-[42px] sm:tw-flex-1 tw-border tw-border-gray-200 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-all"
               />
               <button
                 onClick={handleAdd}
@@ -298,7 +298,7 @@ export default function ExerciseLog({ goals, onAddGoal, onDeleteGoal, mode }) {
                   !exercise ||
                   (type === "reps" ? !reps || !sets : !reps)
                 }
-                className={`tw-px-6 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-space-x-2 tw-transition-all ${
+                className={`tw-w-full tw-h-[42px] sm:tw-w-auto tw-px-6 tw-py-2.5 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-space-x-2 tw-transition-all ${
                   isLoading || (type === "reps" ? !reps || !sets : !reps)
                     ? "tw-bg-gray-100 tw-text-gray-400 tw-cursor-not-allowed"
                     : "tw-bg-blue-500 tw-text-white hover:tw-bg-blue-600"
