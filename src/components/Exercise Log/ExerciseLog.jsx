@@ -24,13 +24,14 @@ import useGoalStore from "../../stores/useGoalStore";
 import { exerciseIcons } from "../../dataFiles/exerciseIcons";
 import ExerciseDetailDialog from "../ExerciseDetailDialog/ExerciseDetailDialog";
 
-export default function ExerciseLog({ goals, mode }) {
+export default function ExerciseLog({ mode }) {
   const [exercise, setExercise] = useState("");
   const [reps, setReps] = useState(""); //taking input for reps&sets / mins / kms
   const [sets, setSets] = useState(""); //taking input for sets
   const [type, setType] = useState("reps");
   const [comments, setComments] = useState("");
 
+  const [goals, setGoals] = useState([]);
   const [filteredExerciseNames, setFilteredExerciseNames] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -43,6 +44,17 @@ export default function ExerciseLog({ goals, mode }) {
   const exerciseNames = useExerciseGuideStore((state) => state.exerciseNames);
   const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
   const deleteGoal = useGoalStore((state) => state.deleteGoal);
+  const goalState = useGoalStore((state) => state.goals);
+
+  useEffect(() => {
+    if (mode === "progress") {
+      setGoals(goalState);
+    } else {
+      const activeGoals = goalState.filter((goal) => goal.goalValue > 0);
+      setGoals(activeGoals); // Use filtered goals
+    }
+  }, [goalState]);
+  console.log("shit", goals);
 
   useEffect(() => {
     if (exercise.trim() === "") {

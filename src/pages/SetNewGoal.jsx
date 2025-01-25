@@ -17,9 +17,6 @@ export default function SetNewGoal() {
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [goals, setGoals] = useState([]);
   const resetAllGoalValues = useGoalStore((state) => state.resetAllGoalValues);
-  const deleteGoal = useGoalStore((state) => state.deleteGoal);
-  const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
-
   const goalState = useGoalStore((state) => state.goals);
 
   useEffect(() => {
@@ -101,7 +98,7 @@ export default function SetNewGoal() {
             </div>
 
             <div className="tw-p-6 sm:tw-p-8">
-              <ExerciseLog goals={goals} mode="goal" />
+              <ExerciseLog mode="goal" />
             </div>
           </div>
         </div>
