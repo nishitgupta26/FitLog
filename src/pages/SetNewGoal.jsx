@@ -66,7 +66,7 @@ export default function SetNewGoal() {
 
           {/* Main Content Section */}
           <div className="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100">
-            <div className="tw-p-6 sm:tw-p-8 tw-border-b tw-border-gray-100">
+            <div className="tw-p-6 sm:tw-p-8 tw-border-b tw-border-gray-100 tw-bg-blue-200 tw-rounded-t-2xl">
               <div className="tw-flex tw-flex-col sm:tw-flex-row tw-items-center tw-justify-between tw-gap-4">
                 <div className="tw-space-y-2">
                   <Typography

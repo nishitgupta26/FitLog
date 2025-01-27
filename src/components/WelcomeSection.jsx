@@ -21,7 +21,7 @@ const WelcomeSection = () => (
         </Typography>
       </div>
       <div className="tw-hidden sm:tw-block tw-mt-6 sm:tw-mt-0">
-        <FitnessCenterIcon className="tw-text-orange-400 tw-w-24 tw-h-24" />
+        <FitnessCenterIcon className="tw-text-amber-500 tw-w-24 tw-h-24" />
       </div>
     </div>
   </Paper>

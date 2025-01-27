@@ -7,13 +7,13 @@ const StatsGrid = ({ totalGoal, totalProgress }) => (
   <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
     <Paper
       elevation={0}
-      className="tw-rounded-xl tw-overflow-hidden tw-bg-pink-200"
+      className="tw-rounded-xl tw-overflow-hidden tw-bg-rose-200/75"
     >
       <WeeklyStreak streakData={[true, false, true, true, false, true, true]} />
     </Paper>
     <Paper
       elevation={0}
-      className="tw-rounded-xl tw-overflow-hidden tw-bg-yellow-200"
+      className="tw-rounded-xl tw-overflow-hidden tw-bg-amber-200/75"
     >
       <DailyProgress goal={totalGoal} progress={totalProgress} />
     </Paper>
