@@ -182,15 +182,6 @@ export default function Navbar() {
             </MenuItem>
           </Menu>
         </div>
-        <div className="tw-hidden md:tw-flex">
-          <IconButton
-            color="inherit"
-            onClick={toggleTheme}
-            sx={{ display: { xs: "none", md: "flex" }, marginLeft: 2 }}
-          >
-            {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-        </div>
       </div>
     </nav>
   );
