@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import TimerIcon from "@mui/icons-material/Timer";
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
@@ -54,7 +55,7 @@ export default function ExerciseLog({ mode }) {
       setGoals(activeGoals); // Use filtered goals
     }
   }, [goalState]);
-  console.log("shit", goals);
+  // console.log("goals", goals);
 
   useEffect(() => {
     if (exercise.trim() === "") {
@@ -143,6 +144,66 @@ export default function ExerciseLog({ mode }) {
     }
   };
 
+  const handleChange = (goal, change) => {
+    const newExercise = {
+      exercise: goal.exercise,
+      value:
+        mode === "progress"
+          ? (goal.progress || 0) + change
+          : goal.goalValue + change,
+      type: goal.type,
+      comments: goal.comments,
+    };
+
+    addOrUpdateGoal(newExercise, mode);
+  };
+
+  // component for +/- the goal or progress
+  const renderControl = (goal) => {
+    const currentValue =
+      mode === "progress" ? goal.progress || 0 : goal.goalValue;
+
+    return (
+      <div className="tw-flex tw-items-center tw-justify-center tw-space-x-4">
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            handleChange(goal, -1);
+          }}
+          className="tw-bg-red-100 hover:tw-bg-red-200 tw-transition-all"
+          size="small"
+          disabled={currentValue <= 0}
+        >
+          <RemoveIcon className="tw-text-red-500" />
+        </IconButton>
+
+        <div className="tw-flex tw-items-center tw-space-x-2">
+          <Typography
+            variant="h6"
+            className={`tw-font-bold ${
+              (goal.progress || 0) >= goal.goalValue
+                ? "tw-text-green-600"
+                : "tw-text-blue-600"
+            }`}
+          >
+            {currentValue} {goal.type}
+          </Typography>
+        </div>
+
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            handleChange(goal, 1);
+          }}
+          className="tw-bg-green-100 hover:tw-bg-green-200 tw-transition-all"
+          size="small"
+        >
+          <AddIcon className="tw-text-green-500" />
+        </IconButton>
+      </div>
+    );
+  };
+
   return (
     <div className="tw-space-y-6">
       {/* Success Alert */}
@@ -210,7 +271,7 @@ export default function ExerciseLog({ mode }) {
                   setReps("");
                   setSets("");
                 }}
-                className="tw-text-sm"
+                className="tw-text-sm   tw-rounded-lg"
                 sx={{
                   height: "42px",
                   ".MuiOutlinedInput-notchedOutline": {
@@ -335,7 +396,7 @@ export default function ExerciseLog({ mode }) {
         {goals?.length > 0 ? (
           goals.map((goal) => (
             <Fade in={true} key={goal.id}>
-              <Card
+              {/* <Card
                 variant="outlined"
                 onClick={() => handleExerciseDetailClick(goal.exercise)}
                 className="tw-p-4 tw-rounded-2xl tw-transition-all tw-border-gray-200 hover:tw-shadow-md hover:tw-border-blue-200 tw-cursor-pointer"
@@ -372,6 +433,8 @@ export default function ExerciseLog({ mode }) {
                           )}
                         </div>
                       </div>
+
+                      {renderControl(goal)}
                       <IconButton
                         onClick={(e) => {
                           e.stopPropagation();
@@ -403,7 +466,6 @@ export default function ExerciseLog({ mode }) {
                     )}
                   </div>
                 </div>
-
                 {goal.goalValue > 0 && (
                   <div className="tw-mt-4">
                     <div className="tw-flex tw-justify-between tw-items-center tw-mb-2">
@@ -425,7 +487,7 @@ export default function ExerciseLog({ mode }) {
                         %
                       </Typography>
                     </div>
-                    <div className="tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-3 tw-overflow-hidden">
+                    <div className="tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-2 tw-overflow-hidden">
                       <div
                         className={`tw-h-full ${
                           (goal.progress || 0) >= goal.goalValue
@@ -451,6 +513,141 @@ export default function ExerciseLog({ mode }) {
                     )}
                   </div>
                 )}
+              </Card> */}
+
+              <Card
+                variant="outlined"
+                onClick={() => handleExerciseDetailClick(goal.exercise)}
+                className="tw-p-4 tw-rounded-2xl tw-transition-all tw-border-gray-200 hover:tw-shadow-md hover:tw-border-blue-200 tw-cursor-pointer"
+              >
+                <div className="tw-flex tw-flex-col tw-gap-4">
+                  {/* Top Section with two containers */}
+                  <div className="tw-flex tw-flex-col sm:tw-flex-row sm:tw-justify-between sm:tw-items-center tw-gap-4">
+                    {/* Left Container: Icon + Exercise Info */}
+                    <div className="tw-flex tw-items-start tw-gap-4 tw-flex-grow tw-min-w-0">
+                      <div className="tw-bg-blue-50 tw-p-3 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-shrink-0">
+                        {getTypeIcon(
+                          goal.type,
+                          "tw-w-8 tw-h-8 tw-text-blue-600"
+                        )}
+                      </div>
+
+                      <div className="tw-min-w-0 tw-flex-grow">
+                        <Typography
+                          variant="h6"
+                          className="tw-font-semibold tw-text-gray-800 tw-mb-1 tw-cursor-pointer hover:tw-text-blue-600 tw-truncate"
+                          onClick={() =>
+                            handleExerciseDetailClick(goal.exercise)
+                          }
+                        >
+                          {goal.exercise}
+                        </Typography>
+                        <div className="tw-flex tw-flex-wrap tw-items-center tw-gap-2">
+                          <Chip
+                            label={`${goal.progress || 0} / ${goal.goalValue} ${
+                              goal.type
+                            }`}
+                            size="small"
+                            color="primary"
+                            variant="soft"
+                            className="tw-mb-1"
+                          />
+                          {goal.progress >= goal.goalValue && (
+                            <EmojiEventsIcon className="tw-text-yellow-500" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Container: Controls */}
+                    <div className="tw-flex tw-items-start tw-gap-2 tw-shrink-0">
+                      {renderControl(goal)}
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteGoal(goal.id, mode);
+                        }}
+                        className="tw-p-1"
+                        color="error"
+                        size="small"
+                      >
+                        <DeleteIcon className="" />
+                      </IconButton>
+                    </div>
+                  </div>
+
+                  {/* Comments Section */}
+                  {goal.comments && (
+                    <Typography
+                      variant="body2"
+                      className="tw-text-gray-600 tw-italic"
+                    >
+                      "{goal.comments}"
+                    </Typography>
+                  )}
+
+                  {/* Last Updated Section */}
+                  {goal.lastUpdated && mode === "progress" && (
+                    <Typography
+                      variant="caption"
+                      className="tw-text-gray-400 tw-block"
+                    >
+                      Last updated: {formatTimeAgo(goal.lastUpdated)}
+                    </Typography>
+                  )}
+
+                  {/* Progress Bar Section */}
+                  {goal.goalValue > 0 && (
+                    <div className="tw-mt-2">
+                      <div className="tw-flex tw-justify-between tw-items-center tw-mb-2">
+                        <Typography
+                          variant="body2"
+                          className="tw-text-gray-600"
+                        >
+                          Progress
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          className={`tw-font-semibold ${
+                            (goal.progress || 0) >= goal.goalValue
+                              ? "tw-text-green-600"
+                              : "tw-text-blue-600"
+                          }`}
+                        >
+                          {(
+                            ((goal.progress || 0) / goal.goalValue) *
+                            100
+                          ).toFixed(1)}
+                          %
+                        </Typography>
+                      </div>
+                      <div className="tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-2 tw-overflow-hidden">
+                        <div
+                          className={`tw-h-full ${
+                            (goal.progress || 0) >= goal.goalValue
+                              ? "tw-bg-green-500"
+                              : "tw-bg-blue-500"
+                          }`}
+                          style={{
+                            width: `${Math.min(
+                              ((goal.progress || 0) / goal.goalValue) * 100,
+                              100
+                            )}%`,
+                            transition: "width 0.5s ease-in-out",
+                          }}
+                        />
+                      </div>
+                      {(goal.progress || 0) >= goal.goalValue && (
+                        <Typography
+                          variant="caption"
+                          className="tw-text-green-600 tw-mt-2 tw-block tw-text-center"
+                        >
+                          🎉 Goal Achieved! Congratulations! 🏆
+                        </Typography>
+                      )}
+                    </div>
+                  )}
+                </div>
               </Card>
             </Fade>
           ))
