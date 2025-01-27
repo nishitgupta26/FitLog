@@ -17,6 +17,7 @@ import {
   Typography,
   Alert,
   CircularProgress,
+  Snackbar,
   LinearProgress,
   Card,
 } from "@mui/material";
@@ -80,6 +81,7 @@ export default function ExerciseLog({ mode }) {
 
   const handleAdd = async () => {
     if (exercise) {
+      // console.log("Adding exercise", exercise);
       const newExercise = {
         exercise,
         value:
@@ -91,7 +93,7 @@ export default function ExerciseLog({ mode }) {
       };
 
       addOrUpdateGoal(newExercise, mode);
-
+      setShowSuccess(true);
       // Reset fields
       setExercise("");
       setReps("");
@@ -207,17 +209,22 @@ export default function ExerciseLog({ mode }) {
   return (
     <div className="tw-space-y-6">
       {/* Success Alert */}
-      <Fade in={showSuccess}>
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
         <Alert
           severity="success"
-          className="tw-absolute tw-top-4 tw-right-4"
+          sx={{ width: "100%" }}
           onClose={() => setShowSuccess(false)}
         >
           {mode === "progress"
             ? "Progress logged successfully!"
             : "Goal set successfully!"}
         </Alert>
-      </Fade>
+      </Snackbar>
 
       {/* Input Form */}
       <Paper
