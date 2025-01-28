@@ -29,6 +29,7 @@ import {
   Box,
   LinearProgress,
   Typography,
+  Paper,
 } from "@mui/material";
 
 const Profile = () => {
@@ -110,338 +111,347 @@ const Profile = () => {
   const isEmailSet = Boolean(storedData?.email);
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        backgroundColor: "#f3f4f6",
-        py: 4,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Card
-          sx={{
-            borderRadius: 2,
-            boxShadow:
-              "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
-          }}
-        >
-          {/* Profile Header */}
-          <Box
-            className="tw-bg-blue-500"
+    // <Box
+    //   sx={{
+    //     minHeight: "100vh",
+    //     backgroundColor: "#ffffff",
+    //     py: 4,
+    //   }}
+    // >
+    <div className="tw-min-h-screen">
+      <Paper
+        elevation={0}
+        className=" tw-bg-white tw-max-w-full tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-4 sm:tw-py-6 lg:tw-py-8"
+      >
+        <Container maxWidth="lg">
+          <Card
             sx={{
-              height: 200,
-              position: "relative",
-              mb: 8,
+              borderRadius: 2,
+              boxShadow:
+                "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
             }}
           >
+            {/* Profile Header */}
             <Box
+              className="tw-bg-blue-500"
               sx={{
-                position: "absolute",
-                bottom: -32,
-                left: { xs: "50%", md: 40 },
-                transform: { xs: "translateX(-50%)", md: "translateX(0)" },
+                height: 200,
+                position: "relative",
+                mb: 8,
               }}
             >
-              <Avatar
+              <Box
                 sx={{
-                  width: 120,
-                  height: 120,
-                  border: "4px solid white",
-                  boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+                  position: "absolute",
+                  bottom: -32,
+                  left: { xs: "50%", md: 40 },
+                  transform: { xs: "translateX(-50%)", md: "translateX(0)" },
                 }}
               >
-                {firstName[0]}
-                {lastName[0]}
-              </Avatar>
+                <Avatar
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    border: "4px solid white",
+                    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  {firstName[0]}
+                  {lastName[0]}
+                </Avatar>
+              </Box>
             </Box>
-          </Box>
 
-          <CardContent sx={{ px: { xs: 2, md: 4 }, pb: 4 }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", md: "row" },
-                gap: 4,
-              }}
-            >
-              {/* Main Content */}
-              <Box sx={{ flex: 2 }}>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                  Personal Information
-                </Typography>
+            <CardContent sx={{ px: { xs: 2, md: 4 }, pb: 4 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  gap: 4,
+                }}
+              >
+                {/* Main Content */}
+                <Box sx={{ flex: 2 }}>
+                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                    Personal Information
+                  </Typography>
 
-                <Box sx={{ display: "grid", gap: 3 }}>
-                  {/* Name and Measurement Fields */}
-                  <Box
-                    sx={{
-                      display: "grid",
-                      gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                      gap: 2,
-                    }}
-                  >
+                  <Box sx={{ display: "grid", gap: 3 }}>
+                    {/* Name and Measurement Fields */}
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                        gap: 2,
+                      }}
+                    >
+                      <TextField
+                        fullWidth
+                        label="First Name"
+                        name="firstName"
+                        value={profileData.firstName}
+                        onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <Person sx={{ color: "text.secondary", mr: 1 }} />
+                          ),
+                        }}
+                      />
+                      <TextField
+                        fullWidth
+                        label="Last Name"
+                        name="lastName"
+                        value={profileData.lastName}
+                        onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <Person sx={{ color: "text.secondary", mr: 1 }} />
+                          ),
+                        }}
+                      />
+                      <TextField
+                        fullWidth
+                        label="Height (cm)"
+                        name="height"
+                        type="number"
+                        value={profileData.height}
+                        onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <Height sx={{ color: "text.secondary", mr: 1 }} />
+                          ),
+                        }}
+                      />
+                      <TextField
+                        fullWidth
+                        label="Weight (kg)"
+                        name="weight"
+                        type="number"
+                        value={profileData.weight}
+                        onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <MonitorWeight
+                              sx={{ color: "text.secondary", mr: 1 }}
+                            />
+                          ),
+                        }}
+                      />
+                    </Box>
+
                     <TextField
                       fullWidth
-                      label="First Name"
-                      name="firstName"
-                      value={profileData.firstName}
+                      label="Email"
+                      name="email"
+                      value={profileData.email}
                       onChange={handleInputChange}
+                      disabled={isEmailSet}
                       InputProps={{
                         startAdornment: (
-                          <Person sx={{ color: "text.secondary", mr: 1 }} />
+                          <Email sx={{ color: "text.secondary", mr: 1 }} />
                         ),
                       }}
                     />
+
                     <TextField
                       fullWidth
-                      label="Last Name"
-                      name="lastName"
-                      value={profileData.lastName}
+                      label="Phone"
+                      name="phone"
+                      value={profileData.phone}
                       onChange={handleInputChange}
                       InputProps={{
                         startAdornment: (
-                          <Person sx={{ color: "text.secondary", mr: 1 }} />
+                          <Phone sx={{ color: "text.secondary", mr: 1 }} />
                         ),
                       }}
                     />
+
                     <TextField
                       fullWidth
-                      label="Height (cm)"
-                      name="height"
-                      type="number"
-                      value={profileData.height}
+                      label="Location"
+                      name="location"
+                      value={profileData.location}
                       onChange={handleInputChange}
                       InputProps={{
                         startAdornment: (
-                          <Height sx={{ color: "text.secondary", mr: 1 }} />
+                          <LocationOn sx={{ color: "text.secondary", mr: 1 }} />
                         ),
                       }}
                     />
+
                     <TextField
                       fullWidth
-                      label="Weight (kg)"
-                      name="weight"
-                      type="number"
-                      value={profileData.weight}
+                      label="About Me"
+                      name="aboutMe"
+                      value={profileData.aboutMe}
                       onChange={handleInputChange}
+                      multiline
+                      rows={4}
                       InputProps={{
                         startAdornment: (
-                          <MonitorWeight
-                            sx={{ color: "text.secondary", mr: 1 }}
+                          <Edit
+                            sx={{ color: "text.secondary", mr: 1, mt: 1.5 }}
                           />
                         ),
                       }}
                     />
                   </Box>
-
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    name="email"
-                    value={profileData.email}
-                    onChange={handleInputChange}
-                    disabled={isEmailSet}
-                    InputProps={{
-                      startAdornment: (
-                        <Email sx={{ color: "text.secondary", mr: 1 }} />
-                      ),
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Phone"
-                    name="phone"
-                    value={profileData.phone}
-                    onChange={handleInputChange}
-                    InputProps={{
-                      startAdornment: (
-                        <Phone sx={{ color: "text.secondary", mr: 1 }} />
-                      ),
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Location"
-                    name="location"
-                    value={profileData.location}
-                    onChange={handleInputChange}
-                    InputProps={{
-                      startAdornment: (
-                        <LocationOn sx={{ color: "text.secondary", mr: 1 }} />
-                      ),
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="About Me"
-                    name="aboutMe"
-                    value={profileData.aboutMe}
-                    onChange={handleInputChange}
-                    multiline
-                    rows={4}
-                    InputProps={{
-                      startAdornment: (
-                        <Edit
-                          sx={{ color: "text.secondary", mr: 1, mt: 1.5 }}
-                        />
-                      ),
-                    }}
-                  />
                 </Box>
-              </Box>
 
-              {/* Side Content */}
-              <Box sx={{ flex: 1 }}>
-                {/* Progress Section */}
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                  Progress
-                </Typography>
-                <Card sx={{ mb: 4, p: 2, backgroundColor: "#f8fafc" }}>
-                  {achievements.map((achievement, index) => (
-                    <Box key={index} sx={{ mb: 2 }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          mb: 1,
-                        }}
-                      >
-                        <Typography variant="body2" color="text.secondary">
-                          {achievement.title}
-                        </Typography>
-                        <Typography variant="body2" fontWeight="medium">
-                          {achievement.value}/{achievement.total}
-                        </Typography>
+                {/* Side Content */}
+                <Box sx={{ flex: 1 }}>
+                  {/* Progress Section */}
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    Progress
+                  </Typography>
+                  <Card sx={{ mb: 4, p: 2, backgroundColor: "#f8fafc" }}>
+                    {achievements.map((achievement, index) => (
+                      <Box key={index} sx={{ mb: 2 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            mb: 1,
+                          }}
+                        >
+                          <Typography variant="body2" color="text.secondary">
+                            {achievement.title}
+                          </Typography>
+                          <Typography variant="body2" fontWeight="medium">
+                            {achievement.value}/{achievement.total}
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={(achievement.value / achievement.total) * 100}
+                          sx={{
+                            height: 6,
+                            borderRadius: 3,
+                            bgcolor: "rgba(0,0,0,0.1)",
+                            ".MuiLinearProgress-bar": {
+                              bgcolor: "#4caf50",
+                            },
+                          }}
+                        />
                       </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={(achievement.value / achievement.total) * 100}
+                    ))}
+                  </Card>
+
+                  {/* Skills Section */}
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    Skills
+                  </Typography>
+                  <Box
+                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 4 }}
+                  >
+                    {skills.map((skill, index) => (
+                      <Chip
+                        key={index}
+                        label={skill}
                         sx={{
-                          height: 6,
-                          borderRadius: 3,
-                          bgcolor: "rgba(0,0,0,0.1)",
-                          ".MuiLinearProgress-bar": {
-                            bgcolor: "#4caf50",
+                          backgroundColor: "#1e88e5",
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "#1976d2",
                           },
                         }}
                       />
-                    </Box>
-                  ))}
-                </Card>
+                    ))}
+                  </Box>
 
-                {/* Skills Section */}
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                  Skills
-                </Typography>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 4 }}>
-                  {skills.map((skill, index) => (
-                    <Chip
-                      key={index}
-                      label={skill}
+                  {/* Social Links */}
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    Connect
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <IconButton
                       sx={{
-                        backgroundColor: "#1e88e5",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "#1976d2",
-                        },
+                        bgcolor: "#f3f4f6",
+                        "&:hover": { bgcolor: "#e5e7eb" },
                       }}
-                    />
-                  ))}
-                </Box>
-
-                {/* Social Links */}
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                  Connect
-                </Typography>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <IconButton
-                    sx={{
-                      bgcolor: "#f3f4f6",
-                      "&:hover": { bgcolor: "#e5e7eb" },
-                    }}
-                  >
-                    <LinkedIn sx={{ color: "#1e88e5" }} />
-                  </IconButton>
-                  <IconButton
-                    sx={{
-                      bgcolor: "#f3f4f6",
-                      "&:hover": { bgcolor: "#e5e7eb" },
-                    }}
-                  >
-                    <Instagram sx={{ color: "#1e88e5" }} />
-                  </IconButton>
-                  <IconButton
-                    sx={{
-                      bgcolor: "#f3f4f6",
-                      "&:hover": { bgcolor: "#e5e7eb" },
-                    }}
-                  >
-                    <GitHub sx={{ color: "#1e88e5" }} />
-                  </IconButton>
+                    >
+                      <LinkedIn sx={{ color: "#1e88e5" }} />
+                    </IconButton>
+                    <IconButton
+                      sx={{
+                        bgcolor: "#f3f4f6",
+                        "&:hover": { bgcolor: "#e5e7eb" },
+                      }}
+                    >
+                      <Instagram sx={{ color: "#1e88e5" }} />
+                    </IconButton>
+                    <IconButton
+                      sx={{
+                        bgcolor: "#f3f4f6",
+                        "&:hover": { bgcolor: "#e5e7eb" },
+                      }}
+                    >
+                      <GitHub sx={{ color: "#1e88e5" }} />
+                    </IconButton>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
 
-            {/* Action Buttons */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 2,
-                mt: 4,
-              }}
-            >
-              <Button
-                variant="outlined"
-                startIcon={<Refresh />}
-                onClick={handleReset}
+              {/* Action Buttons */}
+              <Box
                 sx={{
-                  borderColor: "#d1d5db",
-                  color: "#4b5563",
-                  "&:hover": {
-                    borderColor: "#9ca3af",
-                    backgroundColor: "#f9fafb",
-                  },
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 2,
+                  mt: 4,
                 }}
               >
-                Reset
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<Save />}
-                onClick={handleSave}
-                sx={{
-                  bgcolor: "#1e88e5",
-                  "&:hover": {
-                    bgcolor: "#1976d2",
-                  },
-                }}
-              >
-                Save Changes
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
+                <Button
+                  variant="outlined"
+                  startIcon={<Refresh />}
+                  onClick={handleReset}
+                  sx={{
+                    borderColor: "#d1d5db",
+                    color: "#4b5563",
+                    "&:hover": {
+                      borderColor: "#9ca3af",
+                      backgroundColor: "#f9fafb",
+                    },
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<Save />}
+                  onClick={handleSave}
+                  sx={{
+                    bgcolor: "#1e88e5",
+                    "&:hover": {
+                      bgcolor: "#1976d2",
+                    },
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
 
-        <Snackbar
-          open={showAlert}
-          autoHideDuration={3000}
-          onClose={handleCloseAlert}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <Alert
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={3000}
             onClose={handleCloseAlert}
-            severity="success"
-            sx={{ width: "100%" }}
-            elevation={6}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
           >
-            Profile updated successfully!
-          </Alert>
-        </Snackbar>
-      </Container>
-    </Box>
+            <Alert
+              onClose={handleCloseAlert}
+              severity="success"
+              sx={{ width: "100%" }}
+              elevation={6}
+            >
+              Profile updated successfully!
+            </Alert>
+          </Snackbar>
+        </Container>
+      </Paper>
+    </div>
+    // </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
@@ -12,16 +12,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
 import { ThemeContext } from "../../context/themeContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4"; // Dark mode icon
 import Brightness7Icon from "@mui/icons-material/Brightness7"; // Light mode icon
 
 export default function Navbar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMenuAnchor, setMobileMenuAnchor] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
   const navigate = useNavigate();
-  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -94,9 +92,11 @@ export default function Navbar() {
                   ? "tw-text-blue-500 tw-border-blue-500 hover:tw-bg-blue-50"
                   : "tw-text-gray-700 hover:tw-bg-gray-50"
               }`}
-              startIcon={React.cloneElement(item.icon, {
-                className: index === 0 ? "tw-text-blue-500" : "",
-              })}
+              startIcon={
+                <item.icon.type
+                  className={index === 0 ? "tw-text-blue-500" : ""}
+                />
+              }
               onClick={() => handleNavigate(item.path)}
             >
               {item.label}
