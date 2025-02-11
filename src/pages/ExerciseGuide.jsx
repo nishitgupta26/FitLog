@@ -18,7 +18,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import useExerciseGuideStore from "../stores/useExerciseGuideStore";
 import { exerciseIcons } from "../dataFiles/exerciseIcons";
 import ExerciseDetailDialog from "../components/ExerciseDetailDialog/ExerciseDetailDialog";
 import PropTypes from "prop-types";
@@ -45,21 +44,23 @@ DifficultyChip.propTypes = {
 };
 
 export default function ExerciseGuide() {
+  const [exercises, setExercises] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const {
-    exercises,
-    searchTerm,
-    selectedCategory,
-    setSearchTerm,
-    setSelectedCategory,
-    fetchExercises,
-  } = useExerciseGuideStore();
 
   useEffect(() => {
+    const fetchExercises = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/exercises");
+        setExercises(response.data);
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
+      }
+    };
     fetchExercises();
-    console.log("Fetching exercises...");
-  }, [fetchExercises]);
+  }, []);
 
   const categories = ["all", ...new Set(exercises.map((ex) => ex.category))];
 
