@@ -1,17 +1,27 @@
 import { create } from "zustand";
-import { exerciseData } from "../dataFiles/exerciseData";
+import axios from "axios";
 
-const useExerciseGuideStore = create((set) => ({
-  exercises: exerciseData,
-
-  // Directly extract exercise names from the exercises
-  exerciseNames: exerciseData.map((exercise) => exercise.name),
-
+const useExerciseGuideStore = create((set, get) => ({
+  exercises: [],
+  exerciseNames: [],
   searchTerm: "",
   selectedCategory: "all",
 
   setSearchTerm: (term) => set({ searchTerm: term }),
   setSelectedCategory: (category) => set({ selectedCategory: category }),
+
+  fetchExercises: async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/exercises");
+      const exercises = response.data;
+      set({
+        exercises: exercises,
+        exerciseNames: exercises.map((exercise) => exercise.name),
+      });
+    } catch (error) {
+      console.error("Error fetching exercises:", error);
+    }
+  },
 
   addExercise: (exercise) =>
     set((state) => {

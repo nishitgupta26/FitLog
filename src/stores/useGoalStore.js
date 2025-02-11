@@ -33,6 +33,7 @@ const useGoalStore = create(
                 updatedGoals[existingGoalIndex] = {
                   ...existingGoal,
                   progress: newExercise.value,
+                  comments: newExercise.comments,
                   lastUpdated: new Date().toISOString(),
                 };
               } else {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Typography,
   Paper,
@@ -6,9 +6,6 @@ import {
   InputAdornment,
   Chip,
   Button,
-  IconButton,
-  Dialog,
-  DialogContent,
   Card,
   CardContent,
   CardActions,
@@ -20,11 +17,12 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import CloseIcon from "@mui/icons-material/Close";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import useExerciseGuideStore from "../stores/useExerciseGuideStore";
 import { exerciseIcons } from "../dataFiles/exerciseIcons";
 import ExerciseDetailDialog from "../components/ExerciseDetailDialog/ExerciseDetailDialog";
+import PropTypes from "prop-types";
+import axios from "axios";
 
 const DifficultyChip = ({ difficulty }) => {
   const colors = {
@@ -38,9 +36,12 @@ const DifficultyChip = ({ difficulty }) => {
       label={difficulty}
       color={colors[difficulty] || "default"}
       size="small"
-      className="tw-capitalize"
     />
   );
+};
+
+DifficultyChip.propTypes = {
+  difficulty: PropTypes.string.isRequired,
 };
 
 export default function ExerciseGuide() {
@@ -52,7 +53,13 @@ export default function ExerciseGuide() {
     selectedCategory,
     setSearchTerm,
     setSelectedCategory,
+    fetchExercises,
   } = useExerciseGuideStore();
+
+  useEffect(() => {
+    fetchExercises();
+    console.log("Fetching exercises...");
+  }, [fetchExercises]);
 
   const categories = ["all", ...new Set(exercises.map((ex) => ex.category))];
 
@@ -65,9 +72,17 @@ export default function ExerciseGuide() {
     return matchesSearch && matchesCategory;
   });
 
-  const handleExerciseClick = (exercise) => {
-    setSelectedExercise(exercise);
-    setOpenDialog(true);
+  const handleExerciseClick = async (exercise) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/exercises/${exercise.id}`
+      );
+      console.log("Exercise details:", response.data);
+      setSelectedExercise(response.data);
+      setOpenDialog(true);
+    } catch (error) {
+      console.error("Error fetching exercise details:", error);
+    }
   };
 
   const renderSvgIcon = (category) => {
