@@ -1,16 +1,27 @@
 import React, { useState } from "react";
 import { TextField, Button, Paper, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const SignInForm = ({ onSignIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign-in logic here
-    onSignIn(email, password);
+    try {
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        email,
+        password,
+      });
+      // Handle successful sign-in
+      onSignIn(response.data);
+      navigate("/"); // Redirect to home page
+    } catch (err) {
+      setError("Invalid email or password");
+    }
   };
 
   const handleSignUpRedirect = () => {
@@ -19,6 +30,11 @@ const SignInForm = ({ onSignIn }) => {
 
   return (
     <Paper className="tw-p-6 tw-bg-white tw-rounded-xl tw-border tw-border-gray-100">
+      {error && (
+        <Typography variant="body2" color="error" className="tw-mb-4">
+          {error}
+        </Typography>
+      )}
       <form onSubmit={handleSubmit} className="tw-space-y-4">
         <TextField
           label="Email"

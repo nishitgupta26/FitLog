@@ -29,7 +29,7 @@ const SignUp = () => {
       <Box
         className="tw-p-6 tw-bg-white tw-rounded-xl tw-shadow-lg tw-border tw-border-gray-100"
         sx={{
-          maxWidth: 1000, // Increase the maxWidth to make the form wider
+          maxWidth: 400, // Increase the maxWidth to make the form wider
           width: "100%",
           backdropFilter: "blur(10px)",
           backgroundColor: "rgba(255, 255, 255, 0.8)",
