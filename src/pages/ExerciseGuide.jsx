@@ -22,6 +22,7 @@ import { exerciseIcons } from "../dataFiles/exerciseIcons";
 import ExerciseDetailDialog from "../components/ExerciseDetailDialog/ExerciseDetailDialog";
 import PropTypes from "prop-types";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const DifficultyChip = ({ difficulty }) => {
   const colors = {
@@ -52,8 +53,17 @@ export default function ExerciseGuide() {
 
   useEffect(() => {
     const fetchExercises = async () => {
+      const token = Cookies.get("token");
       try {
-        const response = await axios.get("http://localhost:8080/api/exercises");
+        const response = await axios.get(
+          "http://localhost:8080/api/exercises",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setExercises(response.data);
       } catch (error) {
         console.error("Error fetching exercises:", error);
@@ -74,9 +84,16 @@ export default function ExerciseGuide() {
   });
 
   const handleExerciseClick = async (exercise) => {
+    const token = Cookies.get("token");
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/exercises/${exercise.id}`
+        `http://localhost:8080/api/exercises/${exercise.id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       console.log("Exercise details:", response.data);
       setSelectedExercise(response.data);

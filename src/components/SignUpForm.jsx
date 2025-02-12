@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { TextField, Button, Paper, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const SignUpForm = ({ onSignUp }) => {
   const [email, setEmail] = useState("");
@@ -18,6 +19,7 @@ const SignUpForm = ({ onSignUp }) => {
       });
       // Handle successful sign-up
       onSignUp(response.data);
+      Cookies.set("token", response.data.token, { expires: 7 }); // Store token in cookie for 7 days
       navigate("/"); // Redirect to home page
     } catch (err) {
       setError("Failed to create account. Please try again.");
