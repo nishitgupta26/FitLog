@@ -25,6 +25,9 @@ import useExerciseGuideStore from "../../stores/useExerciseGuideStore";
 import useGoalStore from "../../stores/useGoalStore";
 import { exerciseIcons } from "../../dataFiles/exerciseIcons";
 import ExerciseDetailDialog from "../ExerciseDetailDialog/ExerciseDetailDialog";
+import dayjs from "dayjs";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 export default function ExerciseLog({ mode }) {
   const [exercise, setExercise] = useState("");
@@ -42,29 +45,71 @@ export default function ExerciseLog({ mode }) {
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
-  const exercises = useExerciseGuideStore((state) => state.exercises);
-  const exerciseNames = useExerciseGuideStore((state) => state.exerciseNames);
-  const addOrUpdateGoal = useGoalStore((state) => state.addOrUpdateGoal);
-  const deleteGoal = useGoalStore((state) => state.deleteGoal);
-  const goalState = useGoalStore((state) => state.goals);
+  const [exercises, setExercises] = useState([]);
+  const [exerciseNames, setExerciseNames] = useState([]);
 
   useEffect(() => {
-    if (mode === "progress") {
-      setGoals(goalState);
-    } else {
-      const activeGoals = goalState.filter((goal) => goal.goalValue > 0);
-      setGoals(activeGoals); // Use filtered goals
-    }
-  }, [goalState]);
-  // console.log("goals", goals);
+    const fetchExercises = async () => {
+      const token = Cookies.get("token");
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/exercises",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setExercises(response.data);
+        console.log("Exercises fetched successfully:", response.data);
+        setExerciseNames(response.data.map((exercise) => exercise.name));
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
+      }
+    };
+
+    fetchExercises();
+  }, []);
+
+  useEffect(() => {
+    const fetchGoals = async () => {
+      const currentDate = dayjs().format("YYYY-MM-DD");
+      const token = Cookies.get("token");
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/goals/${currentDate}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const goalsArray = response.data.map((group) =>
+          group.reduce((acc, { Key, Value }) => {
+            acc[Key] = Value;
+            return acc;
+          }, {})
+        );
+
+        setGoals(goalsArray);
+        console.log("Goals fetched successfully:", goalsArray);
+      } catch (error) {
+        console.error("Error fetching goals:", error);
+      }
+    };
+
+    fetchGoals();
+  }, [mode]);
 
   useEffect(() => {
     if (exercise.trim() === "") {
       setFilteredExerciseNames([]);
     } else {
-      let filtered = exerciseNames.filter((name) =>
-        name.toLowerCase().includes(exercise.toLowerCase())
-      );
+      let filtered = exercises
+        .filter((ex) => ex.name.toLowerCase().includes(exercise.toLowerCase()))
+        .map((ex) => ex.name);
 
       if (mode === "progress") {
         const existingGoals = goals
@@ -76,30 +121,149 @@ export default function ExerciseLog({ mode }) {
       }
 
       setFilteredExerciseNames(filtered);
+      console.log("Filtered exercises:", filtered);
     }
-  }, [exercise, exerciseNames, goals, mode]);
+  }, [exercise, exercises, goals, mode]);
 
+  console.log("Goals:", goals, typeof goals);
   const handleAdd = async () => {
     if (exercise) {
-      // console.log("Adding exercise", exercise);
-      const newExercise = {
-        exercise,
-        value:
+      const currentDate = dayjs().format("YYYY-MM-DD");
+      const token = Cookies.get("token");
+
+      // Create the goal object
+      const goalObject = {
+        goalName: exercise.trim(),
+        type: type, // "reps", "mins", or "kms"
+        goalValue:
           type === "reps"
-            ? parseInt(reps, 10) * parseInt(sets, 10)
-            : parseInt(reps, 10),
-        type,
-        comments,
+            ? parseInt(reps, 10) * parseInt(sets || 1, 10)
+            : parseFloat(reps),
+        progressValue:
+          mode === "progress"
+            ? type === "reps"
+              ? parseInt(reps, 10) * parseInt(sets || 1, 10)
+              : parseFloat(reps)
+            : 0,
+        comments: comments.trim(),
+        isActive: true,
       };
 
-      addOrUpdateGoal(newExercise, mode);
-      setShowSuccess(true);
-      // Reset fields
-      setExercise("");
-      setReps("");
-      setSets("");
-      setComments("");
-      setType("reps");
+      // Validate the data
+      if (
+        !goalObject.goalName ||
+        !goalObject.type ||
+        goalObject.goalValue <= 0
+      ) {
+        console.error("Invalid goal data");
+        return;
+      }
+
+      // Create request payload matching backend structure
+      const payload = {
+        type: "exercise",
+        goal: goalObject, // Nest under "goal" field as expected by backend
+      };
+
+      console.log("Sending payload:", payload);
+
+      try {
+        const response = await axios.post(
+          `http://localhost:8080/api/goals/${currentDate}`,
+          payload, // Send the properly structured payload
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data) {
+          setGoals((prevGoals) => [...prevGoals, response.data]);
+          setShowSuccess(true);
+
+          // Reset fields
+          setExercise("");
+          setReps("");
+          setSets("");
+          setComments("");
+          setType("reps");
+        }
+      } catch (error) {
+        console.error("Error adding goal:", error);
+        console.error("Error response:", error.response?.data);
+      }
+    }
+  };
+
+  const handleDelete = async (goalId, mode) => {
+    console.log("Deleting goal with ID:", goalId);
+    if (!goalId) {
+      console.error("No goal ID provided");
+      return;
+    }
+    const currentDate = dayjs().format("YYYY-MM-DD");
+    const token = Cookies.get("token");
+
+    // Determine URL based on mode
+    const baseUrl = "http://localhost:8080/api";
+    const url =
+      mode === "progress"
+        ? `${baseUrl}/progress/${currentDate}/${goalId}`
+        : `${baseUrl}/goals/${currentDate}/${goalId}`;
+
+    try {
+      await axios.delete(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // // Update state based on mode
+      // if (mode === "progress") {
+      //   setProgress((progress) => progress.filter((p) => p.id !== goalId));
+      // } else {
+      //   setGoals((goals) => goals.filter((goal) => goal.id !== goalId));
+      // }
+
+      // Show success message
+      console.log(`Successfully deleted ${mode}`);
+      // setShowSuccess(true);
+      // setTimeout(() => setShowSuccess(false), 3000);
+    } catch (error) {
+      console.error(`Error deleting ${mode}:`, error);
+      // setShowError(true);
+      // setTimeout(() => setShowError(false), 3000);
+    }
+  };
+
+  const handleChange = async (goal, change, mode) => {
+    console.log("Changing goal:", goal, "by:", change);
+    const updatedGoal = {
+      ...goal,
+      ...(mode === "progress"
+        ? { progressValue: goal.progressValue + change }
+        : { goalValue: goal.goalValue + change }),
+    };
+
+    const currentDate = dayjs().format("YYYY-MM-DD");
+    const token = Cookies.get("token");
+    try {
+      const response = await axios.patch(
+        `http://localhost:8080/api/goals/${currentDate}/${goal._id}`,
+        updatedGoal,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setGoals(goals.map((g) => (g.id === goal.id ? response.data : g)));
+    } catch (error) {
+      console.error("Error updating goal:", error);
     }
   };
 
@@ -136,32 +300,35 @@ export default function ExerciseLog({ mode }) {
   };
 
   const handleExerciseDetailClick = (exerciseName) => {
-    const exerciseDetails = exercises.find(
-      (ex) => ex.name.toLowerCase() === exerciseName.toLowerCase()
-    );
+    // Guard clause for null/undefined exerciseName
+    if (!exerciseName) {
+      console.warn("Exercise name is undefined");
+      return;
+    }
 
+    // Guard clause for null/undefined exercises array
+    if (!exercises || !Array.isArray(exercises)) {
+      console.warn("Exercises array is not available");
+      return;
+    }
+
+    const exerciseDetails = exercises.find((ex) => {
+      console.log("Comparing:", {
+        exerciseInput: exerciseName.toLowerCase(),
+        currentExercise: ex?.name?.toLowerCase(),
+        match: ex?.name?.toLowerCase() === exerciseName.toLowerCase(),
+      });
+      return ex?.name?.toLowerCase() === exerciseName.toLowerCase();
+    });
+    console.log("Selected exercise details:", exerciseName, exerciseDetails);
     if (exerciseDetails) {
       setSelectedExercise(exerciseDetails);
       setOpenDialog(true);
     }
   };
 
-  const handleChange = (goal, change) => {
-    const newExercise = {
-      exercise: goal.exercise,
-      value:
-        mode === "progress"
-          ? (goal.progress || 0) + change
-          : goal.goalValue + change,
-      type: goal.type,
-      comments: goal.comments,
-    };
-
-    addOrUpdateGoal(newExercise, mode);
-  };
-
   // component for +/- the goal or progress
-  const renderControl = (goal) => {
+  const renderControl = (goal, mode) => {
     const currentValue =
       mode === "progress" ? goal.progress || 0 : goal.goalValue;
 
@@ -170,7 +337,7 @@ export default function ExerciseLog({ mode }) {
         <IconButton
           onClick={(e) => {
             e.stopPropagation();
-            handleChange(goal, -1);
+            handleChange(goal, -1, mode);
           }}
           className="tw-bg-red-100 hover:tw-bg-red-200 tw-transition-all"
           size="small"
@@ -195,7 +362,7 @@ export default function ExerciseLog({ mode }) {
         <IconButton
           onClick={(e) => {
             e.stopPropagation();
-            handleChange(goal, 1);
+            handleChange(goal, 1, mode);
           }}
           className="tw-bg-green-100 hover:tw-bg-green-200 tw-transition-all"
           size="small"
@@ -524,7 +691,7 @@ export default function ExerciseLog({ mode }) {
 
               <Card
                 variant="outlined"
-                onClick={() => handleExerciseDetailClick(goal.exercise)}
+                onClick={() => handleExerciseDetailClick(goal.goalName)}
                 className="tw-p-4 tw-rounded-2xl tw-transition-all tw-border-gray-200 hover:tw-shadow-md hover:tw-border-blue-200 tw-cursor-pointer"
               >
                 <div className="tw-flex tw-flex-col tw-gap-4">
@@ -544,10 +711,10 @@ export default function ExerciseLog({ mode }) {
                           variant="h6"
                           className="tw-font-semibold tw-text-gray-800 tw-mb-1 tw-cursor-pointer hover:tw-text-blue-600 tw-truncate"
                           onClick={() =>
-                            handleExerciseDetailClick(goal.exercise)
+                            handleExerciseDetailClick(goal.goalName)
                           }
                         >
-                          {goal.exercise}
+                          {goal.goalName}
                         </Typography>
                         <div className="tw-flex tw-flex-wrap tw-items-center tw-gap-2">
                           <Chip
@@ -568,11 +735,11 @@ export default function ExerciseLog({ mode }) {
 
                     {/* Right Container: Controls */}
                     <div className="tw-flex tw-items-start tw-gap-2 tw-shrink-0">
-                      {renderControl(goal)}
+                      {renderControl(goal, mode)}
                       <IconButton
                         onClick={(e) => {
                           e.stopPropagation();
-                          deleteGoal(goal.id, mode);
+                          handleDelete(goal._id, mode);
                         }}
                         className="tw-p-1"
                         color="error"

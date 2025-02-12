@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   Typography,
   IconButton,
-  Button,
   Box,
   Chip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import YouTubeVideo from "./YouTubeVideo";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const DifficultyChip = ({ difficulty }) => {
   const colors = {
@@ -44,6 +45,32 @@ const ExerciseDetailDialog = ({
   selectedExercise,
   exerciseIcons,
 }) => {
+  // const [selectedExercise, setSelectedExercise] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchExerciseDetails = async () => {
+  //     const token = Cookies.get("token");
+  //     try {
+  //       const response = await axios.get(
+  //         `http://localhost:8080/api/exercises/${selectedExerciseId}`,
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       setSelectedExercise(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching exercise details:", error);
+  //     }
+  //   };
+
+  //   if (selectedExerciseId) {
+  //     fetchExerciseDetails();
+  //   }
+  // }, [selectedExerciseId]);
+
   if (!selectedExercise) return null;
 
   return (
@@ -143,12 +170,6 @@ const ExerciseDetailDialog = ({
 
           {/* Video Tutorial Button */}
           <section>
-            {/* <Typography
-              variant="subtitle1"
-              className="tw-font-semibold tw-mb-4"
-            >
-              {`${selectedExercise.name}`} Tutorial Video
-            </Typography> */}
             <YouTubeVideo
               videoUrl={selectedExercise.videoUrl}
               title={`${selectedExercise.name} Tutorial`}

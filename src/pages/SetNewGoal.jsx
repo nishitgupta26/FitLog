@@ -11,23 +11,59 @@ import {
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GoalIllustration from "../assets/goal_illustration.svg";
 import ExerciseLog from "../components/Exercise Log/ExerciseLog";
-import useGoalStore from "../stores/useGoalStore";
+import axios from "axios";
+import dayjs from "dayjs";
+import Cookies from "js-cookie";
 
 export default function SetNewGoal() {
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [goals, setGoals] = useState([]);
-  const resetAllGoalValues = useGoalStore((state) => state.resetAllGoalValues);
-  const goalState = useGoalStore((state) => state.goals);
 
   useEffect(() => {
-    const activeGoals = goalState.filter((goal) => goal.goalValue > 0);
-    setGoals(activeGoals); // Use filtered goals
-  }, [goalState]);
+    const fetchGoals = async () => {
+      const currentDate = dayjs().format("YYYY-MM-DD");
+      const token = Cookies.get("token");
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/goals/${currentDate}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const goalsArray = response.data.map((group) =>
+          group.reduce((acc, { Key, Value }) => {
+            acc[Key] = Value;
+            return acc;
+          }, {})
+        );
+        setGoals(goalsArray);
+        // console.log("Goals fetched successfully:", response.data);
+      } catch (error) {
+        console.error("Error fetching goals:", error);
+      }
+    };
 
-  // console.log(goals, goalState);
-  const handleResetConfirm = () => {
-    resetAllGoalValues();
-    setResetDialogOpen(false);
+    fetchGoals();
+  }, []);
+  console.log("Goals:", goals);
+  const handleResetConfirm = async () => {
+    const currentDate = dayjs().format("YYYY-MM-DD");
+    const token = Cookies.get("token");
+    try {
+      await axios.delete(`http://localhost:8080/api/goals/${currentDate}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setGoals([]);
+      setResetDialogOpen(false);
+    } catch (error) {
+      console.error("Error resetting goals:", error);
+    }
   };
 
   return (
