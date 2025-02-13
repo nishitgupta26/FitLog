@@ -1,9 +1,18 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 import SignInForm from "../components/SignInForm";
 import { Box, Typography } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
 import backgroundImage from "../assets/background.png"; // Adjust the path as necessary
 
-const SignIn = ({ onSignIn }) => {
+const SignIn = () => {
+  const { isAuthenticated } = useAuth();
+
+  // Redirect if already authenticated
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <Box
       className="tw-flex tw-justify-center tw-items-center tw-min-h-screen"
@@ -34,7 +43,7 @@ const SignIn = ({ onSignIn }) => {
         <Typography variant="h6" className="tw-mb-4" align="center">
           Sign In to Continue
         </Typography>
-        <SignInForm onSignIn={onSignIn} />
+        <SignInForm />
       </Box>
     </Box>
   );

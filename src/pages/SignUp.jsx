@@ -1,15 +1,17 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 import SignUpForm from "../components/SignUpForm";
 import { Box, Typography } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
 import backgroundImage from "../assets/background.png"; // Adjust the path as necessary
 
 const SignUp = () => {
-  const handleSignUp = (userDetails) => {
-    // Handle sign-up logic here
-    console.log("Sign Up:", userDetails);
-    // Save user details to localStorage or send to server
-    localStorage.setItem("profileData", JSON.stringify(userDetails));
-  };
+  const { isAuthenticated } = useAuth();
+
+  // Add redirect if already authenticated
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <Box
@@ -38,7 +40,7 @@ const SignUp = () => {
         <Typography variant="h4" className="tw-mb-4" align="center">
           Create Your Account
         </Typography>
-        <SignUpForm onSignUp={handleSignUp} />
+        <SignUpForm />
       </Box>
     </Box>
   );

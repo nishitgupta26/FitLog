@@ -12,6 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { ThemeContext } from "../../context/themeContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4"; // Dark mode icon
 import Brightness7Icon from "@mui/icons-material/Brightness7"; // Light mode icon
@@ -19,7 +20,10 @@ import Brightness7Icon from "@mui/icons-material/Brightness7"; // Light mode ico
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
+
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -38,13 +42,8 @@ export default function Navbar() {
 
   const handleNavigate = (path) => {
     if (path === "logout") {
-      localStorage.removeItem("profileData");
-      const feedback = document.createElement("div");
-      feedback.className =
-        "tw-fixed tw-bottom-4 tw-right-4 tw-bg-blue-500 tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-shadow-lg";
-      feedback.textContent = "Successfully logged out";
-      document.body.appendChild(feedback);
-      setTimeout(() => feedback.remove(), 3000);
+      logout(); // Use AuthContext logout
+      navigate("/sign-in");
     } else {
       navigate(path);
     }

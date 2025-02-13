@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { TextField, Button, Paper, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const SignInForm = ({ onSignIn }) => {
+const SignInForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,12 +19,11 @@ const SignInForm = ({ onSignIn }) => {
         email,
         password,
       });
-      // Handle successful sign-in
-      onSignIn(response.data);
-      Cookies.set("token", response.data.token, { expires: 7 }); // Store token in cookie for 7 days
+      login(response.data.token); // Store token in context
       navigate("/"); // Redirect to home page
     } catch (err) {
-      setError("Invalid email or password");
+      console.error("Login error:", err);
+      setError(err.response?.data?.message || "Invalid email or password");
     }
   };
 
