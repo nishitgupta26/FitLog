@@ -19,10 +19,11 @@ export const exerciseIcons = {
     </svg>`,
 
   Core: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="8"/>
-      <path d="M12 8v8"/>
-      <path d="M8 12h8"/>
-    </svg>`,
+    <rect x="8" y="6" width="8" height="12" rx="1"/>
+    <path d="M8 10H16"/>
+    <path d="M8 14H16"/>
+    <path d="M12 6V18"/>
+  </svg>`,
 
   "Lower Body": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 4v16"/>
