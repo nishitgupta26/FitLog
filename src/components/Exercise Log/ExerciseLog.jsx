@@ -119,14 +119,18 @@ export default function ExerciseLog({ mode }) {
       setFilteredExerciseNames([]);
     } else {
       let filtered = exercises
-        .filter((ex) => ex.name.toLowerCase().includes(exercise.toLowerCase()))
+        .filter(
+          (ex) =>
+            ex.name && ex.name.toLowerCase().includes(exercise.toLowerCase())
+        )
         .map((ex) => ex.name);
 
       if (mode === "progress") {
         const existingGoals = goals
           .map((goal) => goal.exercise)
-          .filter((name) =>
-            name.toLowerCase().includes(exercise.toLowerCase())
+          .filter(
+            (name) =>
+              name && name.toLowerCase().includes(exercise.toLowerCase())
           );
         filtered = [...new Set([...existingGoals, ...filtered])];
       }
@@ -137,36 +141,52 @@ export default function ExerciseLog({ mode }) {
   }, [exercise, exercises, goalsUpdated, mode]);
 
   console.log("Goals:", goals, typeof goals);
+
   const handleAdd = async () => {
     if (exercise) {
       const currentDate = dayjs().format("YYYY-MM-DD");
       const token = Cookies.get("token");
+      // Find existing goal with the same name
+      const existingGoal = goals.find(
+        (g) => g.goalName?.toLowerCase() === exercise.trim().toLowerCase()
+      );
 
       // Create the goal object
       const goalObject = {
         goalName: exercise.trim(),
         type: type, // "reps", "mins", or "kms"
         goalValue:
-          type === "reps"
+          mode === "progress"
+            ? existingGoal?.goalValue || 0 // Use existing goal value or 0 in progress mode
+            : type === "reps" // Use input value in goal mode
             ? parseInt(reps, 10) * parseInt(sets || 1, 10)
             : parseFloat(reps),
         progressValue:
-          mode === "progress"
-            ? type === "reps"
-              ? parseInt(reps, 10) * parseInt(sets || 1, 10)
-              : parseFloat(reps)
-            : 0,
+          mode === "goal"
+            ? existingGoal?.progressValue || 0 // Use existing goal value or 0 in progress mode
+            : type === "reps" // Use input value in goal mode
+            ? parseInt(reps, 10) * parseInt(sets || 1, 10)
+            : parseFloat(reps),
         comments: comments.trim(),
         isActive: true,
       };
 
       // Validate the data
       if (
-        !goalObject.goalName ||
-        !goalObject.type ||
-        goalObject.goalValue <= 0
+        mode === "goal" &&
+        (!goalObject.goalName || !goalObject.type || goalObject.goalValue <= 0)
       ) {
-        console.error("Invalid goal data");
+        console.error("Invalid goal data:", goalObject);
+        return;
+      }
+
+      if (
+        mode === "progress" &&
+        (!goalObject.goalName ||
+          !goalObject.type ||
+          goalObject.progressValue < 0)
+      ) {
+        console.error("Invalid progress data:", goalObject);
         return;
       }
 
@@ -179,8 +199,8 @@ export default function ExerciseLog({ mode }) {
       console.log("Sending payload:", payload);
 
       try {
-        const response = await axios.post(
-          `http://localhost:8080/api/goals/${currentDate}`,
+        const response = await axios.put(
+          `http://localhost:8080/api/goals/${currentDate}/${goalObject.goalName}`,
           payload, // Send the properly structured payload
           {
             headers: {
@@ -250,8 +270,8 @@ export default function ExerciseLog({ mode }) {
     const currentDate = dayjs().format("YYYY-MM-DD");
     const token = Cookies.get("token");
     try {
-      const response = await axios.patch(
-        `http://localhost:8080/api/goals/${currentDate}/${goal._id}`,
+      const response = await axios.put(
+        `http://localhost:8080/api/goals/${currentDate}/${goal.goalName}`,
         updatedGoal,
         {
           headers: {

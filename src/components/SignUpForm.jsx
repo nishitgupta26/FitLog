@@ -17,12 +17,13 @@ const SignUpForm = ({ onSignUp }) => {
         email,
         password,
       });
+      console.log("Sign-up response:", response.data);
       // Handle successful sign-up
       onSignUp(response.data);
       Cookies.set("token", response.data.token, { expires: 7 }); // Store token in cookie for 7 days
       navigate("/"); // Redirect to home page
     } catch (err) {
-      setError("Failed to create account. Please try again.");
+      setError("Failed to create account. Please try again.", err);
     }
   };
 
