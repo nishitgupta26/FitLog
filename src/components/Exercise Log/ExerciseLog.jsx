@@ -267,12 +267,19 @@ export default function ExerciseLog({ mode }) {
         : { goalValue: goal.goalValue + change }),
     };
 
+    // Create payload matching backend structure
+    const payload = {
+      type: "exercise",
+      goal: updatedGoal,
+    };
+
     const currentDate = dayjs().format("YYYY-MM-DD");
     const token = Cookies.get("token");
+
     try {
       const response = await axios.put(
         `http://localhost:8080/api/goals/${currentDate}/${goal.goalName}`,
-        updatedGoal,
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
