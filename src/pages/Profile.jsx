@@ -27,7 +27,6 @@ import {
   Alert,
   Container,
   Box,
-  LinearProgress,
   Typography,
   Paper,
 } from "@mui/material";
@@ -101,23 +100,33 @@ const Profile = () => {
     "Marathon Runner",
   ];
 
-  const achievements = [
-    { title: "Workouts", value: 85, total: 100 },
-    { title: "Goals Met", value: 12, total: 15 },
-    { title: "Active Days", value: 28, total: 30 },
+  const quotes = [
+    "The only way to do great work is to love what you do. - Steve Jobs",
+    "The journey of a thousand miles begins with one step. - Lao Tzu",
+    "Believe you can and you're halfway there. - Theodore Roosevelt",
+    "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
+    "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+    "You are never too old to set another goal or to dream a new dream. - C.S. Lewis",
+    "Act as if what you do makes a difference. It does. - William James",
+    "Success is not the key to happiness. Happiness is the key to success. - Albert Schweitzer",
+    "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
+    "The best way to predict the future is to create it. - Peter Drucker",
   ];
+
+  const getQuoteOfTheDay = () => {
+    const date = new Date();
+    const dayOfYear = Math.floor(
+      (date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24
+    );
+    return quotes[dayOfYear % quotes.length];
+  };
+
+  const quoteOfTheDay = getQuoteOfTheDay();
 
   // Check if email is already set
   const isEmailSet = Boolean(storedData?.email);
 
   return (
-    // <Box
-    //   sx={{
-    //     minHeight: "100vh",
-    //     backgroundColor: "#ffffff",
-    //     py: 4,
-    //   }}
-    // >
     <div className="tw-min-h-screen">
       <Paper
         elevation={0}
@@ -300,41 +309,14 @@ const Profile = () => {
 
                 {/* Side Content */}
                 <Box sx={{ flex: 1 }}>
-                  {/* Progress Section */}
+                  {/* Quote of the Day Section */}
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                    Progress
+                    Quote of the Day
                   </Typography>
                   <Card sx={{ mb: 4, p: 2, backgroundColor: "#f8fafc" }}>
-                    {achievements.map((achievement, index) => (
-                      <Box key={index} sx={{ mb: 2 }}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            mb: 1,
-                          }}
-                        >
-                          <Typography variant="body2" color="text.secondary">
-                            {achievement.title}
-                          </Typography>
-                          <Typography variant="body2" fontWeight="medium">
-                            {achievement.value}/{achievement.total}
-                          </Typography>
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={(achievement.value / achievement.total) * 100}
-                          sx={{
-                            height: 6,
-                            borderRadius: 3,
-                            bgcolor: "rgba(0,0,0,0.1)",
-                            ".MuiLinearProgress-bar": {
-                              bgcolor: "#4caf50",
-                            },
-                          }}
-                        />
-                      </Box>
-                    ))}
+                    <Typography variant="body1" color="text.secondary">
+                      {quoteOfTheDay}
+                    </Typography>
                   </Card>
 
                   {/* Skills Section */}
@@ -451,7 +433,6 @@ const Profile = () => {
         </Container>
       </Paper>
     </div>
-    // </Box>
   );
 };
 
