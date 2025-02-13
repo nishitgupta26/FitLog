@@ -8,6 +8,9 @@ import { useAuth } from "../context/AuthContext";
 const SignUpForm = ({ onSignUp }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -19,12 +22,16 @@ const SignUpForm = ({ onSignUp }) => {
       const response = await axios.post("http://localhost:8080/auth/signup", {
         email,
         password,
+        name,
+        height: parseFloat(height), // Convert height to number
+        weight: parseFloat(weight), // Convert weight to number
       });
       console.log("Sign-up response:", response.data);
       login(response.data.token); // Use login from AuthContext
       navigate("/"); // Redirect to home page
     } catch (err) {
-      setError("Failed to create account. Please try again.", err);
+      console.error("Sign-up error:", err.response ? err.response.data : err.message);
+      setError(err.response?.data?.message || "Failed to create account. Please try again.");
     }
   };
 
@@ -54,6 +61,16 @@ const SignUpForm = ({ onSignUp }) => {
         )}
 
         <TextField
+          label="Name"
+          type="text"
+          fullWidth
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          className="tw-bg-white/80"
+        />
+
+        <TextField
           label="Email"
           type="email"
           fullWidth
@@ -69,6 +86,26 @@ const SignUpForm = ({ onSignUp }) => {
           fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
+          className="tw-bg-white/80"
+        />
+
+        <TextField
+          label="Height (cm)"
+          type="number"
+          fullWidth
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
+          required
+          className="tw-bg-white/80"
+        />
+
+        <TextField
+          label="Weight (kg)"
+          type="number"
+          fullWidth
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
           required
           className="tw-bg-white/80"
         />
