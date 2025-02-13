@@ -48,6 +48,16 @@ export default function ExerciseLog({ mode }) {
   const [exercises, setExercises] = useState([]);
   const [exerciseNames, setExerciseNames] = useState([]);
 
+  const [goalsUpdated, setGoalsUpdated] = useState(false);
+
+  const toggleGoalsUpdated = () => {
+    setGoalsUpdated((prev) => {
+      const newValue = !prev;
+      console.log("Goals Updated:", newValue);
+      return newValue;
+    });
+  };
+
   useEffect(() => {
     const fetchExercises = async () => {
       const token = Cookies.get("token");
@@ -64,6 +74,7 @@ export default function ExerciseLog({ mode }) {
         setExercises(response.data);
         console.log("Exercises fetched successfully:", response.data);
         setExerciseNames(response.data.map((exercise) => exercise.name));
+        console.log("Exercise names:", exerciseNames);
       } catch (error) {
         console.error("Error fetching exercises:", error);
       }
@@ -101,7 +112,7 @@ export default function ExerciseLog({ mode }) {
     };
 
     fetchGoals();
-  }, [mode]);
+  }, [mode, goalsUpdated]);
 
   useEffect(() => {
     if (exercise.trim() === "") {
@@ -123,7 +134,7 @@ export default function ExerciseLog({ mode }) {
       setFilteredExerciseNames(filtered);
       console.log("Filtered exercises:", filtered);
     }
-  }, [exercise, exercises, goals, mode]);
+  }, [exercise, exercises, goalsUpdated, mode]);
 
   console.log("Goals:", goals, typeof goals);
   const handleAdd = async () => {
@@ -178,7 +189,7 @@ export default function ExerciseLog({ mode }) {
             },
           }
         );
-
+        toggleGoalsUpdated();
         if (response.data) {
           setGoals((prevGoals) => [...prevGoals, response.data]);
           setShowSuccess(true);
@@ -220,22 +231,10 @@ export default function ExerciseLog({ mode }) {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      // // Update state based on mode
-      // if (mode === "progress") {
-      //   setProgress((progress) => progress.filter((p) => p.id !== goalId));
-      // } else {
-      //   setGoals((goals) => goals.filter((goal) => goal.id !== goalId));
-      // }
-
-      // Show success message
       console.log(`Successfully deleted ${mode}`);
-      // setShowSuccess(true);
-      // setTimeout(() => setShowSuccess(false), 3000);
+      toggleGoalsUpdated();
     } catch (error) {
       console.error(`Error deleting ${mode}:`, error);
-      // setShowError(true);
-      // setTimeout(() => setShowError(false), 3000);
     }
   };
 
@@ -262,6 +261,7 @@ export default function ExerciseLog({ mode }) {
         }
       );
       setGoals(goals.map((g) => (g.id === goal.id ? response.data : g)));
+      toggleGoalsUpdated();
     } catch (error) {
       console.error("Error updating goal:", error);
     }
@@ -330,7 +330,7 @@ export default function ExerciseLog({ mode }) {
   // component for +/- the goal or progress
   const renderControl = (goal, mode) => {
     const currentValue =
-      mode === "progress" ? goal.progress || 0 : goal.goalValue;
+      mode === "progress" ? goal.progressValue || 0 : goal.goalValue;
 
     return (
       <div className="tw-flex tw-items-center tw-justify-center tw-space-x-4">
@@ -350,7 +350,7 @@ export default function ExerciseLog({ mode }) {
           <Typography
             variant="h6"
             className={`tw-font-bold ${
-              (goal.progress || 0) >= goal.goalValue
+              (goal.progressValue || 0) >= goal.goalValue
                 ? "tw-text-green-600"
                 : "tw-text-blue-600"
             }`}
@@ -718,15 +718,15 @@ export default function ExerciseLog({ mode }) {
                         </Typography>
                         <div className="tw-flex tw-flex-wrap tw-items-center tw-gap-2">
                           <Chip
-                            label={`${goal.progress || 0} / ${goal.goalValue} ${
-                              goal.type
-                            }`}
+                            label={`${goal.progressValue || 0} / ${
+                              goal.goalValue
+                            } ${goal.type}`}
                             size="small"
                             color="primary"
                             variant="soft"
                             className="tw-mb-1"
                           />
-                          {goal.progress >= goal.goalValue && (
+                          {goal.progressValue >= goal.goalValue && (
                             <EmojiEventsIcon className="tw-text-yellow-500" />
                           )}
                         </div>
@@ -783,13 +783,13 @@ export default function ExerciseLog({ mode }) {
                         <Typography
                           variant="body2"
                           className={`tw-font-semibold ${
-                            (goal.progress || 0) >= goal.goalValue
+                            (goal.progressValue || 0) >= goal.goalValue
                               ? "tw-text-green-600"
                               : "tw-text-blue-600"
                           }`}
                         >
                           {(
-                            ((goal.progress || 0) / goal.goalValue) *
+                            ((goal.progressValue || 0) / goal.goalValue) *
                             100
                           ).toFixed(1)}
                           %
@@ -798,20 +798,21 @@ export default function ExerciseLog({ mode }) {
                       <div className="tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-2 tw-overflow-hidden">
                         <div
                           className={`tw-h-full ${
-                            (goal.progress || 0) >= goal.goalValue
+                            (goal.progressValue || 0) >= goal.goalValue
                               ? "tw-bg-green-500"
                               : "tw-bg-blue-500"
                           }`}
                           style={{
                             width: `${Math.min(
-                              ((goal.progress || 0) / goal.goalValue) * 100,
+                              ((goal.progressValue || 0) / goal.goalValue) *
+                                100,
                               100
                             )}%`,
                             transition: "width 0.5s ease-in-out",
                           }}
                         />
                       </div>
-                      {(goal.progress || 0) >= goal.goalValue && (
+                      {(goal.progressValue || 0) >= goal.goalValue && (
                         <Typography
                           variant="caption"
                           className="tw-text-green-600 tw-mt-2 tw-block tw-text-center"
