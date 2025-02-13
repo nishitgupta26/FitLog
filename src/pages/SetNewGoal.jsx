@@ -15,10 +15,16 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Cookies from "js-cookie";
 
+import useGoalUpdateStore from "../stores/useGoalUpdateStore";
+
 export default function SetNewGoal() {
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [goals, setGoals] = useState([]);
 
+  const goalsUpdated = useGoalUpdateStore((state) => state.goalsUpdated);
+  const toggleGoalsUpdated = useGoalUpdateStore(
+    (state) => state.toggleGoalsUpdated
+  );
   useEffect(() => {
     const fetchGoals = async () => {
       const currentDate = dayjs().format("YYYY-MM-DD");
@@ -47,8 +53,9 @@ export default function SetNewGoal() {
     };
 
     fetchGoals();
-  }, []);
-  console.log("Goals:", goals);
+  }, [goalsUpdated]);
+  // console.log("Goals:", goals);
+
   const handleResetConfirm = async () => {
     const currentDate = dayjs().format("YYYY-MM-DD");
     const token = Cookies.get("token");

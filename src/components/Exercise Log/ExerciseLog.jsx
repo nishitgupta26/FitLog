@@ -21,13 +21,13 @@ import {
   LinearProgress,
   Card,
 } from "@mui/material";
-import useExerciseGuideStore from "../../stores/useExerciseGuideStore";
-import useGoalStore from "../../stores/useGoalStore";
+import useGoalUpdateStore from "../../stores/useGoalUpdateStore";
 import { exerciseIcons } from "../../dataFiles/exerciseIcons";
 import ExerciseDetailDialog from "../ExerciseDetailDialog/ExerciseDetailDialog";
 import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { use } from "react";
 
 export default function ExerciseLog({ mode }) {
   const [exercise, setExercise] = useState("");
@@ -47,16 +47,10 @@ export default function ExerciseLog({ mode }) {
 
   const [exercises, setExercises] = useState([]);
   const [exerciseNames, setExerciseNames] = useState([]);
-
-  const [goalsUpdated, setGoalsUpdated] = useState(false);
-
-  const toggleGoalsUpdated = () => {
-    setGoalsUpdated((prev) => {
-      const newValue = !prev;
-      console.log("Goals Updated:", newValue);
-      return newValue;
-    });
-  };
+  const goalsUpdated = useGoalUpdateStore((state) => state.goalsUpdated);
+  const toggleGoalsUpdated = useGoalUpdateStore(
+    (state) => state.toggleGoalsUpdated
+  );
 
   useEffect(() => {
     const fetchExercises = async () => {
