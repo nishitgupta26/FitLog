@@ -2,16 +2,12 @@ import React, { useState, useEffect } from "react";
 import {
   PhotoCamera,
   Email,
-  Phone,
   Person,
   Save,
   Refresh,
-  Edit,
   LinkedIn,
   Instagram,
   GitHub,
-  LocationOn,
-  FitnessCenter,
   Height,
   MonitorWeight,
 } from "@mui/icons-material";
@@ -29,17 +25,21 @@ import {
   Box,
   Typography,
   Paper,
+  Grid,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const Profile = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
   const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
-    phone: "",
-    aboutMe: "",
-    location: "",
-    fitnessGoal: "",
     height: "",
     weight: "",
   });
@@ -47,9 +47,35 @@ const Profile = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const token = Cookies.get("token");
+        const response = await axios.get("http://localhost:8080/api/getuser", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Profile data response:", response.data);
+        const profileData = {
+          name: response.data.name,
+          email: response.data.email,
+          height: response.data.height,
+          weight: response.data.weight,
+        };
+
+        localStorage.setItem("profileData", JSON.stringify(profileData));
+        setProfileData(profileData);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
+
     const storedData = JSON.parse(localStorage.getItem("profileData"));
     if (storedData) {
       setProfileData(storedData);
+    } else {
+      fetchProfileData();
     }
   }, []);
 
@@ -61,35 +87,71 @@ const Profile = () => {
     }));
   };
 
-  const handleSave = () => {
-    localStorage.setItem("profileData", JSON.stringify(profileData));
-    setShowAlert(true);
+  const handleSave = async () => {
+    try {
+      const token = Cookies.get("token");
+      await axios.patch(
+        "http://localhost:8080/api/setuser",
+        {
+          name: profileData.name,
+          weight: parseFloat(profileData.weight),
+          height: parseFloat(profileData.height),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      localStorage.setItem("profileData", JSON.stringify(profileData));
+      setShowAlert(true);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setShowAlert(false);
+      // Add error alert handling if needed
+    }
   };
 
-  const handleReset = () => {
-    const updatedData = {
-      email: profileData.email, // Retain only the email
-      firstName: "",
-      lastName: "",
-      phone: "",
-      location: "",
-      aboutMe: "",
-      height: "",
-      weight: "",
-    };
+  const handleReset = async () => {
+    try {
+      const token = Cookies.get("token");
+      const updatedData = {
+        email: profileData.email,
+        name: "",
+        height: "0",
+        weight: "0",
+      };
 
-    setProfileData(updatedData); // Update state
-    localStorage.setItem("profileData", JSON.stringify(updatedData));
-    setShowAlert(true); // Optional: Show alert if needed
+      await axios.patch(
+        "http://localhost:8080/api/setuser",
+        {
+          name: "",
+          weight: 0.0,
+          height: 0.0,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setProfileData(updatedData);
+      localStorage.setItem("profileData", JSON.stringify(updatedData));
+      setShowAlert(true);
+    } catch (error) {
+      console.error("Error resetting profile:", error);
+      setShowAlert(false);
+    }
   };
 
   const handleCloseAlert = () => setShowAlert(false);
 
   const storedData = JSON.parse(localStorage.getItem("profileData"));
-  const firstName = storedData?.firstName || "John";
-  const lastName = storedData?.lastName || "Doe";
-  const aboutMe =
-    storedData?.aboutMe || "Fitness Enthusiast | Goal Setter | Achiever";
+  const name = storedData?.name || "John Doe";
 
   const skills = [
     "Weight Training",
@@ -122,132 +184,115 @@ const Profile = () => {
   };
 
   const quoteOfTheDay = getQuoteOfTheDay();
-
-  // Check if email is already set
   const isEmailSet = Boolean(storedData?.email);
 
   return (
-    <div className="tw-min-h-screen">
-      <Paper
-        elevation={0}
-        className=" tw-bg-white tw-max-w-full tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-4 sm:tw-py-6 lg:tw-py-8"
-      >
-        <Container maxWidth="lg">
-          <Card
+    <Box className="tw-min-h-screen tw-bg-gray-50">
+      <Container maxWidth="lg" className="tw-py-8">
+        <Card
+          elevation={2}
+          className="tw-overflow-hidden"
+          sx={{
+            borderRadius: 3,
+            backgroundColor: "white",
+          }}
+        >
+          {/* Profile Header/Banner */}
+          <Box
+            className="tw-bg-blue-500 tw-relative"
             sx={{
-              borderRadius: 2,
-              boxShadow:
-                "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
+              height: isMobile ? 160 : 200,
+              transition: "height 0.3s ease",
             }}
           >
-            {/* Profile Header */}
+            {/* Avatar */}
             <Box
-              className="tw-bg-blue-500"
+              className="tw-absolute tw-left-1/2 tw-transform -tw-translate-x-1/2 md:tw-left-12 md:tw-transform-none"
               sx={{
-                height: 200,
-                position: "relative",
-                mb: 8,
+                bottom: isMobile ? -40 : -60,
+                transition: "all 0.3s ease",
               }}
             >
-              <Box
+              <Avatar
+                className="tw-border-4 tw-border-white tw-shadow-lg"
                 sx={{
-                  position: "absolute",
-                  bottom: -32,
-                  left: { xs: "50%", md: 40 },
-                  transform: { xs: "translateX(-50%)", md: "translateX(0)" },
+                  width: isMobile ? 80 : 120,
+                  height: isMobile ? 80 : 120,
+                  transition: "all 0.3s ease",
+                  fontSize: isMobile ? "1.5rem" : "2rem",
                 }}
               >
-                <Avatar
-                  sx={{
-                    width: 120,
-                    height: 120,
-                    border: "4px solid white",
-                    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  {firstName[0]}
-                  {lastName[0]}
-                </Avatar>
-              </Box>
+                {name[0]}
+              </Avatar>
             </Box>
+          </Box>
 
-            <CardContent sx={{ px: { xs: 2, md: 4 }, pb: 4 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", md: "row" },
-                  gap: 4,
-                }}
-              >
-                {/* Main Content */}
-                <Box sx={{ flex: 2 }}>
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                    Personal Information
-                  </Typography>
+          {/* Main Content */}
+          <CardContent
+            sx={{
+              pt: isMobile ? 6 : 8,
+              px: { xs: 2, sm: 3, md: 4 },
+              pb: 4,
+            }}
+          >
+            <Grid container spacing={4}>
+              {/* Left Column - Personal Info */}
+              <Grid item xs={12} md={8}>
+                <Typography variant="h5" className="tw-font-semibold tw-mb-6">
+                  Personal Information
+                </Typography>
 
-                  <Box sx={{ display: "grid", gap: 3 }}>
-                    {/* Name and Measurement Fields */}
-                    <Box
-                      sx={{
-                        display: "grid",
-                        gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                        gap: 2,
+                <Grid container spacing={3}>
+                  {/* Name Fields */}
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="name"
+                      value={profileData.name}
+                      onChange={handleInputChange}
+                      InputProps={{
+                        startAdornment: (
+                          <Person className="tw-mr-2 tw-text-gray-500" />
+                        ),
                       }}
-                    >
-                      <TextField
-                        fullWidth
-                        label="First Name"
-                        name="firstName"
-                        value={profileData.firstName}
-                        onChange={handleInputChange}
-                        InputProps={{
-                          startAdornment: (
-                            <Person sx={{ color: "text.secondary", mr: 1 }} />
-                          ),
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Last Name"
-                        name="lastName"
-                        value={profileData.lastName}
-                        onChange={handleInputChange}
-                        InputProps={{
-                          startAdornment: (
-                            <Person sx={{ color: "text.secondary", mr: 1 }} />
-                          ),
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Height (cm)"
-                        name="height"
-                        type="number"
-                        value={profileData.height}
-                        onChange={handleInputChange}
-                        InputProps={{
-                          startAdornment: (
-                            <Height sx={{ color: "text.secondary", mr: 1 }} />
-                          ),
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Weight (kg)"
-                        name="weight"
-                        type="number"
-                        value={profileData.weight}
-                        onChange={handleInputChange}
-                        InputProps={{
-                          startAdornment: (
-                            <MonitorWeight
-                              sx={{ color: "text.secondary", mr: 1 }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Box>
+                    />
+                  </Grid>
 
+                  {/* Measurements */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Height (cm)"
+                      name="height"
+                      type="number"
+                      value={profileData.height}
+                      onChange={handleInputChange}
+                      InputProps={{
+                        startAdornment: (
+                          <Height className="tw-mr-2 tw-text-gray-500" />
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Weight (kg)"
+                      name="weight"
+                      type="number"
+                      value={profileData.weight}
+                      onChange={handleInputChange}
+                      InputProps={{
+                        startAdornment: (
+                          <MonitorWeight className="tw-mr-2 tw-text-gray-500" />
+                        ),
+                      }}
+                    />
+                  </Grid>
+
+                  {/* Email */}
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Email"
@@ -257,182 +302,114 @@ const Profile = () => {
                       disabled={isEmailSet}
                       InputProps={{
                         startAdornment: (
-                          <Email sx={{ color: "text.secondary", mr: 1 }} />
+                          <Email className="tw-mr-2 tw-text-gray-500" />
                         ),
                       }}
                     />
+                  </Grid>
+                </Grid>
+              </Grid>
 
-                    <TextField
-                      fullWidth
-                      label="Phone"
-                      name="phone"
-                      value={profileData.phone}
-                      onChange={handleInputChange}
-                      InputProps={{
-                        startAdornment: (
-                          <Phone sx={{ color: "text.secondary", mr: 1 }} />
-                        ),
-                      }}
-                    />
-
-                    <TextField
-                      fullWidth
-                      label="Location"
-                      name="location"
-                      value={profileData.location}
-                      onChange={handleInputChange}
-                      InputProps={{
-                        startAdornment: (
-                          <LocationOn sx={{ color: "text.secondary", mr: 1 }} />
-                        ),
-                      }}
-                    />
-
-                    <TextField
-                      fullWidth
-                      label="About Me"
-                      name="aboutMe"
-                      value={profileData.aboutMe}
-                      onChange={handleInputChange}
-                      multiline
-                      rows={4}
-                      InputProps={{
-                        startAdornment: (
-                          <Edit
-                            sx={{ color: "text.secondary", mr: 1, mt: 1.5 }}
-                          />
-                        ),
-                      }}
-                    />
-                  </Box>
-                </Box>
-
-                {/* Side Content */}
-                <Box sx={{ flex: 1 }}>
-                  {/* Quote of the Day Section */}
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+              {/* Right Column - Additional Info */}
+              <Grid item xs={12} md={4}>
+                {/* Quote of the Day */}
+                <Box className="tw-mb-6">
+                  <Typography variant="h6" className="tw-font-semibold tw-mb-3">
                     Quote of the Day
                   </Typography>
-                  <Card sx={{ mb: 4, p: 2, backgroundColor: "#f8fafc" }}>
+                  <Card className="tw-bg-gray-50" sx={{ p: 2 }}>
                     <Typography variant="body1" color="text.secondary">
                       {quoteOfTheDay}
                     </Typography>
                   </Card>
+                </Box>
 
-                  {/* Skills Section */}
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                {/* Skills */}
+                <Box className="tw-mb-6">
+                  <Typography variant="h6" className="tw-font-semibold tw-mb-3">
                     Skills
                   </Typography>
-                  <Box
-                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 4 }}
-                  >
+                  <Box className="tw-flex tw-flex-wrap tw-gap-2">
                     {skills.map((skill, index) => (
                       <Chip
                         key={index}
                         label={skill}
+                        className="tw-text-white hover:tw-bg-blue-600"
                         sx={{
                           backgroundColor: "#1e88e5",
-                          color: "white",
-                          "&:hover": {
-                            backgroundColor: "#1976d2",
-                          },
+                          transition: "background-color 0.3s ease",
                         }}
                       />
                     ))}
                   </Box>
+                </Box>
 
-                  {/* Social Links */}
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                {/* Social Links */}
+                <Box>
+                  <Typography variant="h6" className="tw-font-semibold tw-mb-3">
                     Connect
                   </Typography>
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <IconButton
-                      sx={{
-                        bgcolor: "#f3f4f6",
-                        "&:hover": { bgcolor: "#e5e7eb" },
-                      }}
-                    >
-                      <LinkedIn sx={{ color: "#1e88e5" }} />
-                    </IconButton>
-                    <IconButton
-                      sx={{
-                        bgcolor: "#f3f4f6",
-                        "&:hover": { bgcolor: "#e5e7eb" },
-                      }}
-                    >
-                      <Instagram sx={{ color: "#1e88e5" }} />
-                    </IconButton>
-                    <IconButton
-                      sx={{
-                        bgcolor: "#f3f4f6",
-                        "&:hover": { bgcolor: "#e5e7eb" },
-                      }}
-                    >
-                      <GitHub sx={{ color: "#1e88e5" }} />
-                    </IconButton>
+                  <Box className="tw-flex tw-gap-2">
+                    {[LinkedIn, Instagram, GitHub].map((Icon, index) => (
+                      <IconButton
+                        key={index}
+                        className="tw-bg-gray-100 hover:tw-bg-gray-200"
+                        sx={{ transition: "all 0.3s ease" }}
+                      >
+                        <Icon className="tw-text-blue-500" />
+                      </IconButton>
+                    ))}
                   </Box>
                 </Box>
-              </Box>
+              </Grid>
+            </Grid>
 
-              {/* Action Buttons */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: 2,
-                  mt: 4,
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  startIcon={<Refresh />}
-                  onClick={handleReset}
-                  sx={{
-                    borderColor: "#d1d5db",
-                    color: "#4b5563",
-                    "&:hover": {
-                      borderColor: "#9ca3af",
-                      backgroundColor: "#f9fafb",
-                    },
-                  }}
-                >
-                  Reset
-                </Button>
-                <Button
-                  variant="contained"
-                  startIcon={<Save />}
-                  onClick={handleSave}
-                  sx={{
-                    bgcolor: "#1e88e5",
-                    "&:hover": {
-                      bgcolor: "#1976d2",
-                    },
-                  }}
-                >
-                  Save Changes
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-
-          <Snackbar
-            open={showAlert}
-            autoHideDuration={3000}
-            onClose={handleCloseAlert}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          >
-            <Alert
-              onClose={handleCloseAlert}
-              severity="success"
-              sx={{ width: "100%" }}
-              elevation={6}
+            {/* Action Buttons */}
+            <Box
+              className="tw-flex tw-justify-end tw-gap-3 tw-mt-8"
+              sx={{
+                flexDirection: isMobile ? "column" : "row",
+              }}
             >
-              Profile updated successfully!
-            </Alert>
-          </Snackbar>
-        </Container>
-      </Paper>
-    </div>
+              <Button
+                variant="outlined"
+                startIcon={<Refresh />}
+                onClick={handleReset}
+                fullWidth={isMobile}
+                className="tw-border-gray-300 tw-text-gray-600 hover:tw-bg-gray-50"
+              >
+                Reset
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<Save />}
+                onClick={handleSave}
+                fullWidth={isMobile}
+                className="tw-bg-blue-500 hover:tw-bg-blue-600"
+              >
+                Save Changes
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Snackbar
+          open={showAlert}
+          autoHideDuration={3000}
+          onClose={handleCloseAlert}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={handleCloseAlert}
+            severity="success"
+            elevation={6}
+            className="tw-w-full"
+          >
+            Profile updated successfully!
+          </Alert>
+        </Snackbar>
+      </Container>
+    </Box>
   );
 };
 

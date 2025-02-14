@@ -30,8 +30,14 @@ const SignUpForm = ({ onSignUp }) => {
       login(response.data.token); // Use login from AuthContext
       navigate("/"); // Redirect to home page
     } catch (err) {
-      console.error("Sign-up error:", err.response ? err.response.data : err.message);
-      setError(err.response?.data?.message || "Failed to create account. Please try again.");
+      console.error(
+        "Sign-up error:",
+        err.response ? err.response.data : err.message
+      );
+      setError(
+        err.response?.data?.message ||
+          "Failed to create account. Please try again."
+      );
     }
   };
 
