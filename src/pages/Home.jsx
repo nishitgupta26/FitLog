@@ -11,7 +11,39 @@ import dayjs from "dayjs";
 export default function Home() {
   const [totalProgress, setTotalProgress] = useState(0);
   const [totalGoal, setTotalGoal] = useState(0);
+  const [lastGoalAchieved, setLastGoalAchieved] = useState(null);
   const goalsUpdated = useGoalUpdateStore((state) => state.goalsUpdated);
+  const [streakData, setStreakData] = useState([]);
+
+  // Fetch streak data
+  const fetchStreak = async () => {
+    const currentDate = dayjs().format("YYYY-MM-DD");
+    const token = Cookies.get("token");
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/progress/streak/${currentDate}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const streakArray = Array.isArray(response.data)
+        ? response.data
+        : [response.data];
+
+      setStreakData(streakArray);
+      // console.log("Streak data response:", response.data);
+      // console.log("Streak data:", streakData);
+    } catch (error) {
+      console.error("Error fetching streak:", error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Updated streak data:", streakData);
+  }, [streakData]);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -38,14 +70,30 @@ export default function Home() {
     };
 
     fetchProgress();
+    fetchStreak();
   }, [goalsUpdated]);
+
+  useEffect(() => {
+    const isCurrentlyAchieved = totalProgress >= totalGoal;
+
+    // Only fetch if achievement status has changed
+    if (lastGoalAchieved !== null && lastGoalAchieved !== isCurrentlyAchieved) {
+      fetchStreak();
+    }
+
+    setLastGoalAchieved(isCurrentlyAchieved);
+  }, [totalProgress, totalGoal]);
 
   return (
     <div className="tw-space-y-6">
       {/* Welcome Section */}
       <WelcomeSection />
       {/* Stats Grid */}
-      <StatsGrid totalGoal={totalGoal} totalProgress={totalProgress} />
+      <StatsGrid
+        totalGoal={totalGoal}
+        totalProgress={totalProgress}
+        streakData={streakData}
+      />
 
       {/* Exercise Log Section */}
       <Paper
