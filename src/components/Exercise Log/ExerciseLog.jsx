@@ -57,7 +57,7 @@ export default function ExerciseLog({ mode }) {
       const token = Cookies.get("token");
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/exercises",
+          `${process.env.REACT_APP_API_BASE_URL}/api/exercises`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -83,7 +83,7 @@ export default function ExerciseLog({ mode }) {
       const token = Cookies.get("token");
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/goals/${currentDate}`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/goals/${currentDate}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -194,7 +194,7 @@ export default function ExerciseLog({ mode }) {
 
       try {
         const response = await axios.put(
-          `http://localhost:8080/api/goals/${currentDate}/${goalObject.goalName}`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/goals/${currentDate}/${goalObject.goalName}`,
           payload, // Send the properly structured payload
           {
             headers: {
@@ -232,7 +232,7 @@ export default function ExerciseLog({ mode }) {
     const token = Cookies.get("token");
 
     // Determine URL based on mode
-    const baseUrl = "http://localhost:8080/api";
+    const baseUrl = `${process.env.REACT_APP_API_BASE_URL}/api`;
     const url =
       mode === "progress"
         ? `${baseUrl}/progress/${currentDate}/${goalId}`
@@ -272,7 +272,7 @@ export default function ExerciseLog({ mode }) {
 
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/goals/${currentDate}/${goal.goalName}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/goals/${currentDate}/${goal.goalName}`,
         payload,
         {
           headers: {

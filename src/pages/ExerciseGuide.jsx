@@ -56,7 +56,7 @@ export default function ExerciseGuide() {
       const token = Cookies.get("token");
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/exercises",
+          `${process.env.REACT_APP_API_BASE_URL}/api/exercises`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -87,7 +87,7 @@ export default function ExerciseGuide() {
     const token = Cookies.get("token");
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/exercises/${exercise.id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/exercises/${exercise.id}`,
         {
           headers: {
             "Content-Type": "application/json",
