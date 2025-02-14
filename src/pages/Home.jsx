@@ -12,6 +12,7 @@ export default function Home() {
   const [totalProgress, setTotalProgress] = useState(0);
   const [totalGoal, setTotalGoal] = useState(0);
   const [lastGoalAchieved, setLastGoalAchieved] = useState(null);
+  const [targetDayIndex, setTargetDayIndex] = useState(0);
   const goalsUpdated = useGoalUpdateStore((state) => state.goalsUpdated);
   const [streakData, setStreakData] = useState([]);
 
@@ -29,11 +30,11 @@ export default function Home() {
           },
         }
       );
-      const streakArray = Array.isArray(response.data)
-        ? response.data
-        : [response.data];
+      const streakArray = response.data.streak;
+      const targetDayIndex = response.data.targetDayIndex;
 
       setStreakData(streakArray);
+      setTargetDayIndex(targetDayIndex);
       // console.log("Streak data response:", response.data);
       // console.log("Streak data:", streakData);
     } catch (error) {
@@ -43,6 +44,7 @@ export default function Home() {
 
   useEffect(() => {
     console.log("Updated streak data:", streakData);
+    console.log("target day:", targetDayIndex);
   }, [streakData]);
 
   useEffect(() => {
@@ -93,6 +95,7 @@ export default function Home() {
         totalGoal={totalGoal}
         totalProgress={totalProgress}
         streakData={streakData}
+        targetDayIndex={targetDayIndex}
       />
 
       {/* Exercise Log Section */}

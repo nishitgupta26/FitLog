@@ -5,11 +5,25 @@ import { Typography } from "@mui/material";
 
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-export default function WeeklyStreak({ streakData }) {
-  const currentStreak = streakData.reduce(
-    (acc, curr) => (curr ? acc + 1 : 0),
-    0
-  );
+export default function WeeklyStreak({ streakData, targetDayIndex }) {
+  const calculateStreak = () => {
+    if (!streakData || !streakData.length) return 0;
+
+    // Count consecutive trues backwards from targetDayIndex
+    let recentCount = 0;
+    for (let i = targetDayIndex; i >= 0; i--) {
+      if (streakData[i]) {
+        recentCount++;
+      } else {
+        break; // Stop at first false
+      }
+    }
+
+    // Return the larger of the two counts
+    return recentCount;
+  };
+
+  const currentStreak = calculateStreak();
 
   return (
     <div className="tw-p-6">
