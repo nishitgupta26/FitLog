@@ -50,7 +50,7 @@ const Profile = () => {
     const fetchProfileData = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get("http://localhost:8080/api/getuser", {
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getuser`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -91,7 +91,7 @@ const Profile = () => {
     try {
       const token = Cookies.get("token");
       await axios.patch(
-        "http://localhost:8080/api/setuser",
+        `${process.env.REACT_APP_API_BASE_URL}/api/setuser`,
         {
           name: profileData.name,
           weight: parseFloat(profileData.weight),
@@ -125,7 +125,7 @@ const Profile = () => {
       };
 
       await axios.patch(
-        "http://localhost:8080/api/setuser",
+        `${process.env.REACT_APP_API_BASE_URL}/api/setuser`,
         {
           name: "",
           weight: 0.0,

@@ -19,7 +19,7 @@ const SignUpForm = ({ onSignUp }) => {
     e.preventDefault();
     setError(""); // Clear previous errors
     try {
-      const response = await axios.post("http://localhost:8080/auth/signup", {
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/signup`, {
         email,
         password,
         name,
