@@ -22,7 +22,7 @@ export default function Home() {
     const token = Cookies.get("token");
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/progress/streak/${currentDate}`,
+        `${process.env.REACT_APP_API_BASE_URL}/progress/streak/${currentDate}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -53,7 +53,7 @@ export default function Home() {
       const token = Cookies.get("token");
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/progress/${currentDate}`,
+          `${process.env.REACT_APP_API_BASE_URL}/progress/${currentDate}`,
           {
             headers: {
               "Content-Type": "application/json",
