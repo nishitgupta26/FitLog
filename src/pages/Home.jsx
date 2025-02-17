@@ -22,7 +22,9 @@ export default function Home() {
     const token = Cookies.get("token");
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/progress/streak/${currentDate}`,
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/api/progress/streak/${currentDate}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -53,7 +55,7 @@ export default function Home() {
       const token = Cookies.get("token");
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/progress/${currentDate}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/progress/${currentDate}`,
           {
             headers: {
               "Content-Type": "application/json",

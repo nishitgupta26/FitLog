@@ -31,7 +31,7 @@ export default function SetNewGoal() {
       const token = Cookies.get("token");
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/goals/${currentDate}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/goals/${currentDate}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -60,12 +60,15 @@ export default function SetNewGoal() {
     const currentDate = dayjs().format("YYYY-MM-DD");
     const token = Cookies.get("token");
     try {
-      await axios.delete(`http://localhost:8080/api/goals/${currentDate}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_BASE_URL}/api/goals/${currentDate}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setGoals([]);
       setResetDialogOpen(false);
     } catch (error) {

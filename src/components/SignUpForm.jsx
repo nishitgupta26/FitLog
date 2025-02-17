@@ -19,13 +19,16 @@ const SignUpForm = ({ onSignUp }) => {
     e.preventDefault();
     setError(""); // Clear previous errors
     try {
-      const response = await axios.post("http://localhost:8080/auth/signup", {
-        email,
-        password,
-        name,
-        height: parseFloat(height), // Convert height to number
-        weight: parseFloat(weight), // Convert weight to number
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/signup`,
+        {
+          email,
+          password,
+          name,
+          height: parseFloat(height), // Convert height to number
+          weight: parseFloat(weight), // Convert weight to number
+        }
+      );
       console.log("Sign-up response:", response.data);
       login(response.data.token); // Use login from AuthContext
       navigate("/"); // Redirect to home page

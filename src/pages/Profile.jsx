@@ -50,12 +50,15 @@ const Profile = () => {
     const fetchProfileData = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get("http://localhost:8080/api/getuser", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/getuser`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         console.log("Profile data response:", response.data);
         const profileData = {
           name: response.data.name,
@@ -91,7 +94,7 @@ const Profile = () => {
     try {
       const token = Cookies.get("token");
       await axios.patch(
-        "http://localhost:8080/api/setuser",
+        `${import.meta.env.VITE_API_BASE_URL}/api/setuser`,
         {
           name: profileData.name,
           weight: parseFloat(profileData.weight),
@@ -125,7 +128,7 @@ const Profile = () => {
       };
 
       await axios.patch(
-        "http://localhost:8080/api/setuser",
+        `${import.meta.env.VITE_API_BASE_URL}/api/setuser`,
         {
           name: "",
           weight: 0.0,
